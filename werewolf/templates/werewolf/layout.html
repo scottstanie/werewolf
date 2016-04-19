@@ -4,7 +4,6 @@
 <head>
   <title>Werewolf</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" href="{% static 'werewolf/images/favicon.ico' %}" />
   <!-- Source Sans Pro Font -->
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600' rel='stylesheet' type='text/css'>
 
@@ -23,5 +22,6 @@
   <div id="user-info" data-request-user="{{user.id}}"></div>
   <script type="text/javascript" src="{% static 'werewolf/js/jquery.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'werewolf/js/bootstrap.min.js' %}"></script>
+  <script type="text/javascript" src='{% static 'werewolf/js/reconnecting-websocket.min.js' %}'></script>
   <script type="text/javascript" src="{% static 'werewolf/js/main.js' %}"></script>
 </body>

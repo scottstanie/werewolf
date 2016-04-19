@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import django.views.static
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -34,7 +35,9 @@ urlpatterns = [
         login_required(views.GameCreate.as_view()),
         name='create'),
     url(
-        r'^static/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root', settings.STATIC_ROOT}
+        r'^static/(?P<path>.*)$',
+        django.views.static.serve,
+        kwargs={'document_root', settings.STATIC_ROOT},
+        name='static'
     ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
