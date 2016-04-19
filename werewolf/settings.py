@@ -123,12 +123,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-if DEBUG is False:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-else:
-    STATIC_DIRS = (
-        os.path.join(BASE_DIR, 'static'),
-    )
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'

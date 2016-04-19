@@ -12,6 +12,10 @@ def index(request):
     return render(request, 'werewolf/index.html')
 
 
+def about(request):
+    return render(request, 'werewolf/about.html')
+
+
 class GameCreate(CreateView):
     model = Game
     fields = ['name', 'users']
@@ -22,7 +26,7 @@ class GameCreate(CreateView):
         return super(GameCreate, self).form_valid(form)
 
     def get_success_url(self):
-        generate_board(self.object)
+        # generate_board(self.object)
         return reverse('game', kwargs={'unique_id': self.object.unique_id})
 
 

@@ -22,12 +22,18 @@ from django.conf.urls.static import static
 import views
 
 urlpatterns = [
+    url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^', include('registration.backends.simple.urls')),
-
-    url(r'^static/(?P<path>.*)$', 'django.views.static.serve',
+    url(r'^profile/$', views.profile, name='profile'),
+    url(r'^about/$', views.about, name='about'),
+    url(r'^create/$',
+        login_required(views.GameCreate.as_view()),
+        name='create'),
+    url(
+        r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root', settings.STATIC_ROOT}
     ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
