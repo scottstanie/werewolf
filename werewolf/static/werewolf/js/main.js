@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
   // CSRF setup for ajax calls
   var csrftoken = getCookie('csrftoken');
@@ -11,7 +10,10 @@ $(document).ready(function(){
   });
   var $gameInfo = $('#game-info');
   var requestUser = $gameInfo.data('request-user');
+  var username = $gameInfo.data('username');
   var gameName = $gameInfo.data('game-name');
+  var gameSize = parseInt($('#game-size').text());
+  var readyUsers = findReadyUsers()
 
 	// When we're using HTTPS, use WSS too.
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
@@ -19,41 +21,42 @@ $(document).ready(function(){
 
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
-      var chat = $("#chat")
-      var ele = $('<tr></tr>')
-
-      ele.append(
-          $("<td></td>").text(data.handle)
-      )
-      ele.append(
-          $("<td></td>").text(data.message)
-      )
-
-      chat.append(ele)
+      if (!_.includes(readyUsers, data.user)) {
+        $('#ready-user-list').append(
+            '<li class="ready-user">' + data.user + '</li>'
+        );
+      };
+      readyUsers = findReadyUsers();
+      if (gameIsReady(readyUsers, gameSize)) {
+        console.log('ready!!!');
+      }
   };
 
-  $("#chatform").on("submit", function(event) {
-      var message = {
-          handle: $('#handle').val(),
-          message: $('#message').val(),
-      }
-      chatsock.send(JSON.stringify(message));
-      $("#message").val('').focus();
-      return false;
-  });
 
   $("#ready").on("click", function() {
     signalReady(gameName, requestUser);
+      var message = {
+          handle: $('#handle').val(),
+          message: $('#message').val(),
+          user: username,
+      }
+      chatsock.send(JSON.stringify(message));
+      $("#message").val('').focus();
   });
 });
+
+function findReadyUsers() {
+ return $('.ready-user').map(function() {
+    return $(this).text();
+  })
+}
 
 // Check if there are games waiting
 function signalReady(gameName, requestUser) {
   var url = '/ready/' + gameName + '/' + requestUser;
-  console.log(url);
   $.ajax({
     type: 'GET',
-    url: url, 
+    url: url,
     success: function(result) {
       console.log('Ready worked!');
       console.log(result);
@@ -61,6 +64,10 @@ function signalReady(gameName, requestUser) {
   });
 }
 
+function gameIsReady(readyUsers, gameSize) {
+  return readyUsers.length >= gameSize;
+
+}
 
 function getCookie(name) {
     var cookieValue = null;

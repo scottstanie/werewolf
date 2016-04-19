@@ -6,13 +6,15 @@
   {{error_message}}
 {% endif %}
 
-<div id="game-info" data-game-name="{{ game.name }}" data-request-user="{{user.id}}" class="container">
+<div id="game-info" data-game-name="{{ game.name }}" data-request-user="{{user.id}}" data-username="{{user.username}}" class="container">
   <h1>{{ game.name }}</h1>
-  <h3>Users in game: {{game.num_users}}</h3>
+  <h3>Users in game: <span id="game-size">{{game.num_users}}</span></h3>
   <h3> Ready users: </h3>
-  {% for u in game.present %}
-    <h4>{{u}}</h4>
-  {% endfor %}
+  <ul id="ready-user-list">
+    {% for u in game.present %}
+    <li class="ready-user">{{u}}</li>
+    {% endfor %}
+  </ul>
   <h4>People here: {{game.num_present}}</h4>
   <button type="submit" id="ready">Ready!</button>
   <p class="quiet">
@@ -23,26 +25,6 @@
     <label for="handle">Your name:</label>
     <input id="handle" type="text" placeholder="handle">
   </p>
-  <form id="chatform">
-    <table id="chat">
-      <tbody>
-        {% for message in messages %}
-        <tr>
-            <td>{{ message.handle }}</td>
-            <td>{{ message.message }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-      <tfoot>
-      <tr>
-        <td>Say something:</td>
-        <td colspan=2>
-          <input id="message" type="text" placeholder="message">
-          <button type="submit" id="go">Say it</button>
-        </td>
-      </tfoot>
-    </table>
-  </form>
 </div>
 
 {% endblock %}

@@ -47,8 +47,7 @@ class GameCreate(CreateView):
 @login_required
 def profile(request):
     u = request.user
-    context = {
-    }
+    context = {}
     return render(request, 'werewolf/profile.html', context)
 
 
@@ -56,6 +55,6 @@ def ready(request, game_name, user_id):
     '''User has signalled they are ready for the game to start'''
     user = get_object_or_404(User, id=user_id)
     game = get_object_or_404(Game, name=game_name)
-    game.present = sorted(list(set(game.present +  [user.username])))
+    game.present = sorted(list(set(game.present + [user.username])))
     game.save()
     return JsonResponse({'users_present': game.present})
