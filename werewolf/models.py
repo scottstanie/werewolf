@@ -1,15 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
+import haikunator
+
+
+def _new_haiku():
+    name = None
+    while not name:
+        name = haikunator.haikunate(tokenlength=3, delimiter='')
+        if Game.objects.filter(name=name).exists():
+            name = None
+            continue
+    return name
 
 
 class Game(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     started_date = models.DateTimeField('date started', auto_now_add=True)
     users = models.ManyToManyField(User)
 
     def __unicode__(self):
         return self.name
-
 
 
 class Character(models.Model):

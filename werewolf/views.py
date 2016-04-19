@@ -16,9 +16,22 @@ def about(request):
     return render(request, 'werewolf/about.html')
 
 
+def game(request, name=None):
+    g = Game.objects.filter(name=name)
+    if not g:
+        return render(request, 'werewolf/game.html', {
+            'error_message': "This game doesn't exist.",
+        })
+
+    context = {
+        'game': g
+    }
+    return render(request, 'werewolf/game.html', context)
+
+
 class GameCreate(CreateView):
     model = Game
-    fields = ['name', 'users']
+    fields = ['users']
 
     def form_valid(self, form):
         # TODO: check that request.user is one of the players
@@ -26,8 +39,7 @@ class GameCreate(CreateView):
         return super(GameCreate, self).form_valid(form)
 
     def get_success_url(self):
-        # generate_board(self.object)
-        return reverse('game', kwargs={'unique_id': self.object.unique_id})
+        return reverse('game', kwargs={'name': self.object.name})
 
 
 @login_required

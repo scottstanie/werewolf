@@ -6,94 +6,35 @@
   {{error_message}}
 {% endif %}
 
-<div class="container">
-  <div id="game-info" class="row" data-active="{{active}}" data-current-player="{{current_player.id}}" data-request-user="{{user.id}}" data-is-giver={{user_is_giver}} >
-    <div class="col-md-5">
-      {% if active == False %}
-      <h4>Game over!</h4>
-      {% elif active and user == current_player %}
-      <h3 id="currentTeam" data-team-color="{{team_color}}">{{current_turn}}</h3>
-      <h4>Your move, <span id="player">{{current_player}}</span>! </h4>
-      {% else %}
-      <h3 id="currentTeam" data-team-color="{{team_color}}">{{current_turn}}</h3>
-      <h4>Waiting on {{current_player}}</h4>
-      {% endif %}
-    </div>
-    {% if 'guess' in current_turn %}
-    <div class="col-md-7">
-      <h3> Current clue: <span id="clue-word">"{{current_clue.word}}"</span><span id="clue-number"> {{current_clue.number}}</span></h3>
-      <h4>Number of guesses so far: {{current_guess_number}}</h4>
-    </div>
-    {% endif %}
-  </div>
+  <h1>{{ room.name }}</h1>
+  <p class="quiet">
+    Anyone with this URL can join the room and chat:
+    <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
+  </p>
+  <p>
+    <label for="handle">Your name:</label>
+    <input id="handle" type="text" placeholder="handle">
+  </p>
+  <form id="chatform">
+    <table id="chat">
+      <tbody>
+        {% for message in messages %}
+          <tr>
+            <td>{{ message.formatted_timestamp }}</td>
+            <td>{{ message.handle }}</td>
+            <td>{{ message.message }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+      <tr>
+        <td>Say something:</td>
+        <td colspan=2>
+          <input id="message" type="text" placeholder="message">
+          <button type="submit" id="go">Say it</button>
+        </td>
+      </tfoot>
+    </table>
+  </form>
 
-  <div id="game-board" class="row">
-    {% for word_row in word_rows %}
-    <div class="row text-center word-row" >
-      {% for word in word_row %}
-        <div id="word{{word.id}}" class="col-md-2 word-card" data-color="{{word.color}}" data-chosen="{{word.chosen}}" >{{word.text}}</div>
-      {% endfor %}
-    </div><!--End board -->
-
-  {% endfor %}
-  <div class="inputs giving row">
-    <div class="input-group">
-      <input id="clue-text" type="text" class="form-control" placeholder="My Clue">
-      <span class="input-group-btn">
-        <button id="submit-clue" class="btn btn-default" type="button">Give clue!</button>
-      </span>
-    </div><!-- /input-group -->
-    Number of cards:
-    <select id="card-count" class="form-control">
-      <option>0</option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-      <option>6</option>
-      <option>7</option>
-      <option>8</option>
-      <option>9</option>
-      <option>10</option>
-    </select>
-  </div>
-    <div class="inputs guessing row text-center" >
-      <button id="submit-guess" class="btn btn-lg">Submit Guess</button>
-      <button id="submit-pass" class="btn btn-lg">Pass</button>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-5 text-center">
-      Past Clues:
-      {% for clue in past_clues %}
-      <div class=row>
-        {{clue.giver}}: {{clue}}
-      </div>
-      {% endfor %}
-    </div>
-
-    <div class="col-md-7 text-center">
-      Past Guesses:
-      {% for guess in past_guesses %}
-      <div class=row>
-        {{guess}}
-      </div>
-      {% endfor %}
-    </div>
-
-    <div class="row text-center">
-      <h4>Players:</h4>
-      {% for color, team in players.items %}
-      <div class="row">
-      <strong>{{color}}</strong>
-      Giver: {{team.0}},
-      Guesser: {{team.1}}
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-
-</div>
 {% endblock %}
