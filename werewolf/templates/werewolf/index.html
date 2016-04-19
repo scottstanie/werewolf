@@ -1,0 +1,20 @@
+{% extends "werewolf/layout.html" %}
+
+{% block body %}
+
+<div class="jumbotron">
+<h3>Codenames!</h3>
+  <div class="list-group">
+  {% if user.is_anonymous %}
+    <a class="list-group-item" href="{% url 'login' %}">Login</a>
+    <a class="list-group-item" href="/register/">Register</a>
+  {% else %}
+  <h4>Hey {{user}}</h4>
+    <a class="list-group-item" href="{% url 'create' %}" >Create new game</a>
+    <a class="list-group-item" href="{% url 'profile' %}" >See current games</a>
+    <a class="list-group-item" href="{% url 'logout' %}">Logout</a>
+  {% endif %}
+  </div>
+
+</div>
+{% endblock %}

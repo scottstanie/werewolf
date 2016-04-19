@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Game(models.Model):
     name = models.CharField(max_length=30, unique=True)
     started_date = models.DateTimeField('date started', auto_now_add=True)
+    users = models.ManyToManyField(User)
 
     def __unicode__(self):
         return self.name
@@ -24,6 +25,7 @@ class Matchup(models.Model):
     user = models.ForeignKey(User)
     character = models.ForeignKey(Character)
     game = models.ForeignKey(Game)
+    is_final = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '%s as %s in %s' % (self.user, self.character, self.game)

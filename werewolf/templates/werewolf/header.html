@@ -1,0 +1,21 @@
+{% load staticfiles %}
+<div class="container page-header-wrapper">
+  <div class="col-md-2 logo">
+    <img src="{% static 'werewolf/images/werewolf.jpg' %}" width="100px" height="104px" />
+  </div>
+  <ul class="nav nav-tabs">
+    <li role="presentation" ><a href="{% url 'index' %}">Home</a></li>
+    <li role="presentation" ><a id="my-games" href="{% url 'profile' %}" >My Games</a></li>
+    <li role="presentation" ><a href="{% url 'create' %}" >Create new game</a></li>
+    <li role="presentation" >
+      {% if user.is_anonymous %}
+        <a href="{% url 'login' %}">Login</a>
+      {% else %}
+        <a href="{% url 'logout' %}">Logout</a>
+      {% endif %}
+      </a>
+    </li>
+    <li role="presentation" ><a href="/register/">Register</a></li>
+    <li role="presentation" ><a href="{% url 'about'%}">About</a></li>
+  </ul>
+</div>
