@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 import haikunator
 
 
@@ -17,6 +18,14 @@ class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     started_date = models.DateTimeField('date started', auto_now_add=True)
     users = models.ManyToManyField(User)
+    present = ArrayField(models.CharField(max_length=10), null=True, default=[])
+    num_present = models.IntegerField(default=0)
+
+    def num_users(self):
+        return self.users.count()
+
+    def is_ready(self):
+        return self.num_users <= self.num_present
 
     def __unicode__(self):
         return self.name

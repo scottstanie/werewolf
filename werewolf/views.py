@@ -6,6 +6,7 @@ from django.views.generic.edit import CreateView
 from django.views.decorators.http import require_http_methods
 
 from .models import Game, Character, Switch, Matchup
+from django.contrib.auth.models import User
 
 
 def index(request):
@@ -17,14 +18,15 @@ def about(request):
 
 
 def game(request, name=None):
-    g = Game.objects.filter(name=name)
-    if not g:
+    try:
+        g = Game.objects.get(name=name)
+    except Game.DoesNotExist:
         return render(request, 'werewolf/game.html', {
             'error_message': "This game doesn't exist.",
         })
 
     context = {
-        'game': g
+        'game': g,
     }
     return render(request, 'werewolf/game.html', context)
 
@@ -48,3 +50,12 @@ def profile(request):
     context = {
     }
     return render(request, 'werewolf/profile.html', context)
+
+
+def ready(request, game_name, user_id):
+    '''User has signalled they are ready for the game to start'''
+    user = get_object_or_404(User, id=user_id)
+    game = get_object_or_404(Game, name=game_name)
+    game.present = sorted(list(set(game.present +  [user.username])))
+    game.save()
+    return JsonResponse({'users_present': game.present})

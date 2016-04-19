@@ -9,7 +9,9 @@ $(document).ready(function(){
       }
     }
   });
-  var requestUser = $('#user-info').data('request-user');
+  var $gameInfo = $('#game-info');
+  var requestUser = $gameInfo.data('request-user');
+  var gameName = $gameInfo.data('game-name');
 
 	// When we're using HTTPS, use WSS too.
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
@@ -20,9 +22,6 @@ $(document).ready(function(){
       var chat = $("#chat")
       var ele = $('<tr></tr>')
 
-      ele.append(
-          $("<td></td>").text(data.timestamp)
-      )
       ele.append(
           $("<td></td>").text(data.handle)
       )
@@ -42,17 +41,22 @@ $(document).ready(function(){
       $("#message").val('').focus();
       return false;
   });
+
+  $("#ready").on("click", function() {
+    signalReady(gameName, requestUser);
+  });
 });
 
 // Check if there are games waiting
-function checkWaiting(requestUser) {
+function signalReady(gameName, requestUser) {
+  var url = '/ready/' + gameName + '/' + requestUser;
+  console.log(url);
   $.ajax({
     type: 'GET',
-    url: '/waiting/' + requestUser,
+    url: url, 
     success: function(result) {
-      if(result['waitingOnYou']) {
-        setWaiting();
-      };
+      console.log('Ready worked!');
+      console.log(result);
     },
   });
 }

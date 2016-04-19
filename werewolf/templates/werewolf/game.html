@@ -6,10 +6,18 @@
   {{error_message}}
 {% endif %}
 
-  <h1>{{ room.name }}</h1>
+<div id="game-info" data-game-name="{{ game.name }}" data-request-user="{{user.id}}" class="container">
+  <h1>{{ game.name }}</h1>
+  <h3>Users in game: {{game.num_users}}</h3>
+  <h3> Ready users: </h3>
+  {% for u in game.present %}
+    <h4>{{u}}</h4>
+  {% endfor %}
+  <h4>People here: {{game.num_present}}</h4>
+  <button type="submit" id="ready">Ready!</button>
   <p class="quiet">
     Anyone with this URL can join the room and chat:
-    <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code>
+    <code>{{ request.scheme }}://{{ request.get_host }}/{{ game.name }}</code>
   </p>
   <p>
     <label for="handle">Your name:</label>
@@ -19,8 +27,7 @@
     <table id="chat">
       <tbody>
         {% for message in messages %}
-          <tr>
-            <td>{{ message.formatted_timestamp }}</td>
+        <tr>
             <td>{{ message.handle }}</td>
             <td>{{ message.message }}</td>
           </tr>
@@ -36,5 +43,6 @@
       </tfoot>
     </table>
   </form>
+</div>
 
 {% endblock %}

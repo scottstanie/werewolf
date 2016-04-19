@@ -31,13 +31,14 @@ urlpatterns = [
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^about/$', views.about, name='about'),
     url(r'^game/(?P<name>\w+)', views.game, name='game'),
+    url(r'^ready/(?P<game_name>\w+)/(?P<user_id>\w+)$', views.ready, name='ready'),
     url(r'^create/$',
         login_required(views.GameCreate.as_view()),
         name='create'),
     url(
         r'^static/(?P<path>.*)$',
         django.views.static.serve,
+        name='static',
         kwargs={'document_root', settings.STATIC_ROOT},
-        name='static'
     ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
