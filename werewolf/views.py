@@ -55,7 +55,6 @@ def ready(request, game_name, user_id):
     '''User has signalled they are ready for the game to start'''
     user = get_object_or_404(User, id=user_id)
     game = get_object_or_404(Game, name=game_name)
-    print game.users.all()
     if user in game.users.all():
         game.present = sorted(list(set(game.present + [user.username])))
         game.save()
