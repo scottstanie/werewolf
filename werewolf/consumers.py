@@ -17,8 +17,6 @@ def ws_connect(message):
     try:
         _, _, name = path.strip('/').split('/')
         game = Game.objects.get(name=name)
-        game.num_present += 1
-        game.save()
     except ValueError:
         log.debug('Invalid path: %s' % path)
         return
@@ -39,6 +37,7 @@ def ws_receive(message):
     name = message.channel_session['gamename']
     game = Game.objects.get(name=name)
     data = json.loads(message['text'])
+    print 'data?', data
     # m = game.messages.create(handle=data['handle'], message=data['message'])
     # Group('chat-' + name).send({'text': json.dumps(m.as_dict())})
     Group(form_groupname(name)).send({'text': json.dumps(data)})
@@ -47,10 +46,9 @@ def ws_receive(message):
 @channel_session
 def ws_disconnect(message):
     name = message.channel_session.get('gamename')
+    groupname = None
     try:
         game = Game.objects.get(name=name)
-        game.num_present -= 1
-        game.save()
         groupname = form_groupname(game)
     except Game.DoesNotExist:
         log.info('%s doesnt exist' % name)

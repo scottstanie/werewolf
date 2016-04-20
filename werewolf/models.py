@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.conf import settings
 import haikunator
+import os
 
 
 def _new_haiku():
@@ -19,21 +21,17 @@ class Game(models.Model):
     started_date = models.DateTimeField('date started', auto_now_add=True)
     users = models.ManyToManyField(User)
     present = ArrayField(models.CharField(max_length=10), null=True, default=[])
-    num_present = models.IntegerField(default=0)
 
     def num_users(self):
         return self.users.count()
 
-    def is_ready(self):
-        return self.num_users <= self.num_present
-
     def __unicode__(self):
         return self.name
 
-
+im_dir = os.path.join('/static', 'werewolf', 'images')
 class Character(models.Model):
-
     name = models.CharField(max_length=200)
+    image = models.FilePathField(path=im_dir, recursive=True, blank=True, null=True)
     users = models.ManyToManyField(User, through='Matchup')
 
     def __unicode__(self):

@@ -10,9 +10,22 @@
 }
 
 .chosen {
-  border: 5px solid orange;
+  background: orange;
 }
 
 .waiting {
-  color: red
+  color: red;
 }
+
+.characters {
+  overflow: hidden; /* simple clearfix */
+}
+
+.character {
+  display: block;
+  float: left;
+  width: calc(100% / 4);
+  box-sizing: border-box;
+  padding: 2px;
+}
+

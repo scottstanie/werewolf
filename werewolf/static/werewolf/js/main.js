@@ -43,8 +43,7 @@ $(document).ready(function(){
         console.log('Ajax return!');
         if (result['allowed']) {
           var message = {
-              handle: $('#handle').val(),
-              message: $('#message').val(),
+              test: 'foo',
               user: username,
           }
           chatsock.send(JSON.stringify(message));
@@ -52,6 +51,10 @@ $(document).ready(function(){
         $("#message").val('').focus();
       },
     });
+  });
+
+  $('.character').on('click', function() {
+    $(this).toggleClass('chosen');
   });
 });
 
@@ -64,11 +67,19 @@ function findReadyUsers() {
 
 function checkGameReady(readyUsers, gameSize) {
   if (readyUsers.length >= gameSize) {
-    $('#buttons').append(
-      '<button type="submit" id="start">Start!!</button>'
-    );
-    console.log('ready!!!');
+    if ($('#buttons').children().length == 1) {
+      $('#buttons').append(
+        '<button type="submit" id="start">Start!!</button>'
+      );
+      console.log('ready!!!');
+    }
   }
+}
+
+function getCharacterList() {
+  return $('.chosen').map(function() {
+    return $(this).children('p').text();
+  });
 }
 
 function getCookie(name) {
