@@ -13,7 +13,8 @@ $(document).ready(function(){
   var username = $gameInfo.data('username');
   var gameName = $gameInfo.data('game-name');
   var gameSize = parseInt($('#game-size').text());
-  var readyUsers = findReadyUsers()
+  var readyUsers = findReadyUsers();
+  checkGameReady(readyUsers, gameSize);
 
 	// When we're using HTTPS, use WSS too.
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
@@ -27,9 +28,7 @@ $(document).ready(function(){
         );
       };
       readyUsers = findReadyUsers();
-      if (gameIsReady(readyUsers, gameSize)) {
-        console.log('ready!!!');
-      }
+      checkGameReady(readyUsers, gameSize);
   };
 
 
@@ -41,7 +40,7 @@ $(document).ready(function(){
       url: url,
       success: function(result) {
         allowed = result['allowed'];
-        console.log('Ready worked!');
+        console.log('Ajax return!');
         if (result['allowed']) {
           var message = {
               handle: $('#handle').val(),
@@ -63,9 +62,13 @@ function findReadyUsers() {
 }
 
 
-function gameIsReady(readyUsers, gameSize) {
-  return readyUsers.length >= gameSize;
-
+function checkGameReady(readyUsers, gameSize) {
+  if (readyUsers.length >= gameSize) {
+    $('#buttons').append(
+      '<button type="submit" id="start">Start!!</button>'
+    );
+    console.log('ready!!!');
+  }
 }
 
 function getCookie(name) {

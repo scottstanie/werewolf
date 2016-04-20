@@ -16,7 +16,9 @@
     {% endfor %}
   </ul>
   <h4>People here: {{game.num_present}}</h4>
-  <button type="submit" id="ready">Ready!</button>
+  <div id="buttons">
+    <button type="submit" id="ready">Ready!</button>
+  </div>
   <p class="quiet">
     Anyone with this URL can join the room and chat:
     <code>{{ request.scheme }}://{{ request.get_host }}/{{ game.name }}</code>
