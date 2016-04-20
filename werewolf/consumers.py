@@ -47,10 +47,13 @@ def ws_receive(message):
 @channel_session
 def ws_disconnect(message):
     name = message.channel_session.get('gamename')
-    game = Game.objects.get(name=name)
-    game.num_present -= 1
-    game.save()
-    groupname = form_groupname(game)
+    try:
+        game = Game.objects.get(name=name)
+        game.num_present -= 1
+        game.save()
+        groupname = form_groupname(game)
+    except Game.DoesNotExist:
+        log.info('%s doesnt exist' % name)
 
     if groupname:
         Group(groupname).discard(message.reply_channel)

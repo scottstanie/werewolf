@@ -55,6 +55,11 @@ def ready(request, game_name, user_id):
     '''User has signalled they are ready for the game to start'''
     user = get_object_or_404(User, id=user_id)
     game = get_object_or_404(Game, name=game_name)
-    game.present = sorted(list(set(game.present + [user.username])))
-    game.save()
-    return JsonResponse({'users_present': game.present})
+    print game.users.all()
+    if user in game.users.all():
+        game.present = sorted(list(set(game.present + [user.username])))
+        game.save()
+        allowed = True
+    else:
+        allowed = False
+    return JsonResponse({'allowed': allowed})

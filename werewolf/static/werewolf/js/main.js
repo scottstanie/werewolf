@@ -34,14 +34,25 @@ $(document).ready(function(){
 
 
   $("#ready").on("click", function() {
-    signalReady(gameName, requestUser);
-      var message = {
-          handle: $('#handle').val(),
-          message: $('#message').val(),
-          user: username,
-      }
-      chatsock.send(JSON.stringify(message));
-      $("#message").val('').focus();
+    var url = '/ready/' + gameName + '/' + requestUser;
+    var allowed = false;
+    $.ajax({
+      type: 'GET',
+      url: url,
+      success: function(result) {
+        allowed = result['allowed'];
+        console.log('Ready worked!');
+        if (result['allowed']) {
+          var message = {
+              handle: $('#handle').val(),
+              message: $('#message').val(),
+              user: username,
+          }
+          chatsock.send(JSON.stringify(message));
+        }
+        $("#message").val('').focus();
+      },
+    });
   });
 });
 
@@ -51,18 +62,6 @@ function findReadyUsers() {
   })
 }
 
-// Check if there are games waiting
-function signalReady(gameName, requestUser) {
-  var url = '/ready/' + gameName + '/' + requestUser;
-  $.ajax({
-    type: 'GET',
-    url: url,
-    success: function(result) {
-      console.log('Ready worked!');
-      console.log(result);
-    },
-  });
-}
 
 function gameIsReady(readyUsers, gameSize) {
   return readyUsers.length >= gameSize;
