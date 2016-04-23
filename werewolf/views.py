@@ -48,7 +48,11 @@ class GameCreate(CreateView):
 @login_required
 def profile(request):
     u = request.user
-    context = {}
+
+    context = {
+        'started_games': u.game_set.filter(started=True),
+        'unstarted_games': u.game_set.filter(started=False)
+    }
     return render(request, 'werewolf/profile.html', context)
 
 
