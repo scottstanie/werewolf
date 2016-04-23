@@ -30,6 +30,9 @@ class Game(models.Model):
         '''Used for the group channel of a game'''
         return 'game-%s' % self.name
 
+    def generate_characters(self):
+        '''Create the Matchups for this game'''
+
     def __unicode__(self):
         return self.name
 

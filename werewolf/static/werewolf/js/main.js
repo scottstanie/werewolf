@@ -22,7 +22,6 @@ $(document).ready(function(){
 
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
-      console.log('data.start', data.starting);
       if (data.starting) {
         alert(data.characters[requestUser]);
       } else {
@@ -59,15 +58,20 @@ $(document).ready(function(){
 
   $("#start").on("click", function() {
     var url = '/start/' + gameName;
+    var chosenCharacters = getChosenCharacters();
+    console.log(chosenCharacters);
     $.ajax({
-      type: 'GET',
+      type: 'post',
       url: url,
+      data: {chars: JSON.stringify(chosenCharacters)},
       success: function(result) {
         console.log('Ajax return!');
         console.log(result);
       },
     });
   });
+
+
   $('.character').on('click', function() {
     $(this).toggleClass('chosen');
   });
@@ -91,10 +95,10 @@ function checkGameReady(readyUsers, gameSize) {
   }
 }
 
-function getCharacterList() {
-  return $('.chosen').map(function() {
-    return $(this).children('p').text();
-  });
+function getChosenCharacters() {
+  return $.map($('.character.chosen'), function(c) {
+    return $(c).children('p').text();
+  })
 }
 
 function getCookie(name) {

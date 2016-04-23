@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
@@ -69,8 +70,12 @@ def ready(request, game_name, user_id):
     return JsonResponse({'allowed': allowed})
 
 
+@require_http_methods(['POST'])
 def start(request, game_name):
     '''User has signalled to start the game'''
+    characters_chosen = json.loads(request.POST['chars'])
+    characters = Character.objects.filter(name__in=characters_chosen)
+
     game = get_object_or_404(Game, name=game_name)
     game.started = True
     game.save(update_fields=['started'])
