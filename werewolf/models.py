@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 import haikunator
-import os
+from os.path import join
 
 
 def _new_haiku():
@@ -18,7 +18,8 @@ def _new_haiku():
 
 class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
-    started_date = models.DateTimeField('date started', auto_now_add=True)
+    created_date = models.DateTimeField('date created', auto_now_add=True)
+    started = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
     present = ArrayField(models.CharField(max_length=10), null=True, default=[])
 
@@ -28,10 +29,11 @@ class Game(models.Model):
     def __unicode__(self):
         return self.name
 
-im_dir = os.path.join('/static', 'werewolf', 'images')
+
 class Character(models.Model):
     name = models.CharField(max_length=200)
-    image = models.FilePathField(path=im_dir, recursive=True, blank=True, null=True)
+    image = models.FilePathField(path=join('/static', 'werewolf', 'images'),
+                                 recursive=True, blank=True, null=True)
     users = models.ManyToManyField(User, through='Matchup')
 
     def __unicode__(self):
@@ -46,7 +48,6 @@ class Matchup(models.Model):
 
     def __unicode__(self):
         return '%s as %s in %s' % (self.user, self.character, self.game)
-
 
 
 class Switch(models.Model):

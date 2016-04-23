@@ -63,3 +63,11 @@ def ready(request, game_name, user_id):
     else:
         allowed = False
     return JsonResponse({'allowed': allowed})
+
+
+def start(request, game_name):
+    '''User has signalled to start the game'''
+    game = get_object_or_404(Game, name=game_name)
+    game.started = True
+    game.save()
+    return JsonResponse({})

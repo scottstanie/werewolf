@@ -4,7 +4,7 @@ from .models import Game, Character, Switch, Matchup
 
 
 class GameAdmin(admin.ModelAdmin):
-    readonly_fields = ('started_date',)
+    readonly_fields = ('created_date',)
 
 
 class MatchupInline(admin.TabularInline):

@@ -22,10 +22,13 @@ $(document).ready(function(){
 
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
-      if (!_.includes(readyUsers, data.user)) {
+      if (! _.includes(readyUsers, data.user)) {
         $('#ready-user-list').append(
             '<li class="ready-user">' + data.user + '</li>'
         );
+        if (data.charId) {
+          alert(charId);
+        };
       };
       readyUsers = findReadyUsers();
       checkGameReady(readyUsers, gameSize);
