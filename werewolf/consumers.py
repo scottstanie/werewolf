@@ -1,8 +1,8 @@
+import json
+import logging
 from channels import Group
 from channels.sessions import channel_session
 from .models import Game
-import json
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -38,8 +38,6 @@ def ws_receive(message):
     game = Game.objects.get(name=name)
     data = json.loads(message['text'])
     print 'data?', data
-    # m = game.messages.create(handle=data['handle'], message=data['message'])
-    # Group('chat-' + name).send({'text': json.dumps(m.as_dict())})
     Group(form_groupname(name)).send({'text': json.dumps(data)})
 
 

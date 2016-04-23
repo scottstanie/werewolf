@@ -139,6 +139,7 @@ if DEBUG is False:
 else:
     STATICFILES_DIRS = (
         os.path.join(BASE_DIR, 'werewolf', 'static'),
+        os.path.join(BASE_DIR, 'static')
     )
 
 LOGIN_REDIRECT_URL = '/'

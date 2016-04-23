@@ -22,16 +22,18 @@ $(document).ready(function(){
 
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
-      if (! _.includes(readyUsers, data.user)) {
-        $('#ready-user-list').append(
-            '<li class="ready-user">' + data.user + '</li>'
-        );
-        if (data.charId) {
-          alert(charId);
+      console.log('data.start', data.starting);
+      if (data.starting) {
+        alert(data.characters[requestUser]);
+      } else {
+        if (! _.includes(readyUsers, data.user)) {
+          $('#ready-user-list').append(
+              '<li class="ready-user">' + data.user + '</li>'
+          );
         };
-      };
-      readyUsers = findReadyUsers();
-      checkGameReady(readyUsers, gameSize);
+        readyUsers = findReadyUsers();
+        checkGameReady(readyUsers, gameSize);
+      }
   };
 
 
@@ -46,16 +48,26 @@ $(document).ready(function(){
         console.log('Ajax return!');
         if (result['allowed']) {
           var message = {
-              test: 'foo',
+              starting: false,
               user: username,
           }
           chatsock.send(JSON.stringify(message));
         }
-        $("#message").val('').focus();
       },
     });
   });
 
+  $("#start").on("click", function() {
+    var url = '/start/' + gameName;
+    $.ajax({
+      type: 'GET',
+      url: url,
+      success: function(result) {
+        console.log('Ajax return!');
+        console.log(result);
+      },
+    });
+  });
   $('.character').on('click', function() {
     $(this).toggleClass('chosen');
   });

@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^about/$', views.about, name='about'),
     url(r'^game/(?P<name>\w+)', views.game, name='game'),
     url(r'^ready/(?P<game_name>\w+)/(?P<user_id>\w+)$', views.ready, name='ready'),
+    url(r'^start/(?P<game_name>\w+)$', views.start, name='start'),
     url(r'^create/$',
         login_required(views.GameCreate.as_view()),
         name='create'),

@@ -26,6 +26,10 @@ class Game(models.Model):
     def num_users(self):
         return self.users.count()
 
+    def form_groupname(self):
+        '''Used for the group channel of a game'''
+        return 'game-%s' % self.name
+
     def __unicode__(self):
         return self.name
 
