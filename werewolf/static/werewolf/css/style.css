@@ -24,8 +24,13 @@
 .character {
   display: block;
   float: left;
-  width: calc(100% / 4);
+  width: calc(100% / 3);
+  height: 10em;
   box-sizing: border-box;
   padding: 2px;
 }
 
+.characterImage {
+  max-width:100%;
+  max-height:calc(100% - 30px - 1em);
+}
