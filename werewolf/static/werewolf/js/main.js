@@ -23,7 +23,9 @@ $(document).ready(function(){
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
       if (data.starting) {
-        alert(data.characters[requestUser]);
+        console.log(data);
+        $('body').empty();
+        $('body').append(data.characters[requestUser]);
       } else {
         if (! _.includes(readyUsers, data.user)) {
           $('#ready-user-list').append(

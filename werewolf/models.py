@@ -1,7 +1,9 @@
+import random
+from itertools import izip_longest
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
-from django.conf import settings
+from django.template.loader import render_to_string
 import haikunator
 from os.path import join
 
@@ -30,8 +32,34 @@ class Game(models.Model):
         '''Used for the group channel of a game'''
         return 'game-%s' % self.name
 
-    def generate_characters(self):
+    def _character_view(self, character):
+        '''Input: name of character
+        output: string the html file for the character'''
+        return 'werewolf/characters/%s.html' % character.name.lower()
+
+    def generate_matchups(self, characters):
         '''Create the Matchups for this game'''
+        users = list(self.users.all())
+        random.shuffle(users)
+        # Weird feature of map:
+        # list(izip_longest(chars, users)) == map(None, chars, users)
+        matchup_tuples = izip_longest(users, characters)
+        matchup_dicts = [{'user': t[0], 'character': t[1], 'game': self}
+                         for t in matchup_tuples]
+
+        matchups = [Matchup(**m) for m in matchup_dicts]
+        character_info = {}
+        for m in matchups:
+            if m.user:
+                # If it's not one of the middle cards with no user
+                character_info[m.user.id] = render_to_string(
+                    self._character_view(m.character),
+                    context={'character': m.character}
+                )
+
+            m.save()
+
+        return character_info
 
     def __unicode__(self):
         return self.name
