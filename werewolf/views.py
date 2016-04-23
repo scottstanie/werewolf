@@ -92,10 +92,19 @@ def start(request, game_name):
                      for t in matchup_tuples]
 
     matchups = [Matchup(**m) for m in matchup_dicts]
+    
+    character_info = {}
     for m in matchups:
-        m.save()
-    print matchups
+        if m.user:
+            # If it's not on of the middle cards with no user
+            character_info[m.user.id] = {
+                'name': m.character.name,
+                'view': 'test'
+            }
 
+        m.save()
+
+    print character_info
     game.started = True
     game.save(update_fields=['started'])
     return JsonResponse({})
