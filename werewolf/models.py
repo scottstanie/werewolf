@@ -48,7 +48,7 @@ class Character(models.Model):
 
 
 class Matchup(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     character = models.ForeignKey(Character)
     game = models.ForeignKey(Game)
     is_final = models.BooleanField(default=False)
@@ -64,4 +64,3 @@ class Switch(models.Model):
 
     def __unicode__(self):
         return '%s switched %s' % (self.initiator, self.victim)
-

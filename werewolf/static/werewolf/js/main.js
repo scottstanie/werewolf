@@ -61,7 +61,7 @@ $(document).ready(function(){
     var chosenCharacters = getChosenCharacters();
     console.log(chosenCharacters);
     $.ajax({
-      type: 'post',
+      type: 'POST',
       url: url,
       data: {chars: JSON.stringify(chosenCharacters)},
       success: function(result) {
