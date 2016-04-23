@@ -30,7 +30,7 @@ def game(request, name=None):
 
     context = {
         'game': g,
-        'characters': Character.objects.all(),
+        'characters': Character.objects.order_by('id').all(),
     }
     return render(request, 'werewolf/game.html', context)
 

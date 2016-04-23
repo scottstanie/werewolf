@@ -18,6 +18,14 @@ def _new_haiku():
     return name
 
 
+def find_characters(matchups, character_name):
+    return [m for m in matchups if m.character.name == character_name]
+
+
+def find_middle_cards(matchups):
+    return [m for m in matchups if m.user is None]
+
+
 class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     created_date = models.DateTimeField('date created', auto_now_add=True)
@@ -48,18 +56,31 @@ class Game(models.Model):
                          for t in matchup_tuples]
 
         matchups = [Matchup(**m) for m in matchup_dicts]
+
         character_info = {}
         for m in matchups:
-            if m.user:
-                # If it's not one of the middle cards with no user
-                character_info[m.user.id] = render_to_string(
-                    self._character_view(m.character),
-                    context={'character': m.character}
-                )
-
             m.save()
 
+        game_info = {
+            'werewolves': find_characters(matchups, 'Werewolf'),
+            'masons': find_characters(matchups, 'Mason'),
+            'middle_cards': find_middle_cards(matchups),
+        }
+        print game_info
+        for m in matchups:
+            if m.user:
+                context = create_context(m.character)
+                character_info[m.user.id] = render_to_string(
+                    self._character_view(m.character),
+                    context=context
+                )
+
         return character_info
+
+    def create_context(self, character):
+        context = {'character': m.character}
+        if character == 'werewolf':
+            context['other_wolf']
 
     def __unicode__(self):
         return self.name

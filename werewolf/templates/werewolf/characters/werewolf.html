@@ -1,4 +1,11 @@
 <div>
-  <h3>{{character.name}}!</h3>
-  <img src="{{character.image}}" alt={{character}} \>
+  <h3>{{ character.name }}!</h3>
+  <img src="{{character.image}}" alt={{character}} >
+  {% if other_wolf %}
+  Here is your other wolf:
+  {{ other_wolf }}
+  {% else %}
+  <p>You're a lone wolf!</p>
+  <p>Here's a random middle card:</p>
+  {{ middle_card }}
 </div>
