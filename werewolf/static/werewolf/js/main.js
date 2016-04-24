@@ -72,6 +72,15 @@ $(document).ready(function(){
   $('.character').on('click', function() {
     $(this).toggleClass('chosen');
   });
+
+  // Seer view logic
+  $('body').on('click', '.pick-one', function() {
+    console.log(this);
+    console.log($(this).next());
+    $(this).next().removeClass('disabled');
+    $('.pick-one').removeClass('pick-one');
+  });
+
 });
 
 function findReadyUsers() {
@@ -94,7 +103,7 @@ function checkGameReady(readyUsers, gameSize) {
 
 function getChosenCharacters() {
   return $.map($('.character.chosen'), function(c) {
-    return $(c).children('p').text();
+    return $(c).children('p').data('id');
   })
 }
 

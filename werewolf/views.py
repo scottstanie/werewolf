@@ -70,8 +70,6 @@ def ready(request, game_name, user_id):
     else:
         allowed = False
 
-    print 'allowed'
-    print allowed
     return JsonResponse({'allowed': allowed})
 
 
@@ -80,7 +78,7 @@ def ready(request, game_name, user_id):
 def start(request, game_name):
     '''User has signalled to start the game'''
     characters_chosen = json.loads(request.POST['chars'])
-    characters = list(Character.objects.filter(name__in=characters_chosen))
+    characters = list(Character.objects.filter(id__in=characters_chosen))
     random.shuffle(characters)
 
     game = get_object_or_404(Game, name=game_name)

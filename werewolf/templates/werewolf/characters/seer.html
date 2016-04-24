@@ -1,19 +1,24 @@
-<div>
+<div id="seer">
   <h3>{{character.name}}!</h3>
   <img src="{{character.image}}" alt={{character}} >
-  <h4>Middle Cards</h4>
-  {% for character in middle_cards %}
-  <div class="character text-center">
-    {{ character.name }}
-    <img class="character-image" src="{{character.image}}" alt="{{character}}" >
+  <h4>Pick one to look at!</h4>
+  <h4 class="pick-one">Middle Cards</h4>
+  <div class="disabled">
+    {% for character in middle_cards %}
+    <div class="text-center">
+      {{ character.name }}
+      <img class="character-image" src="{{character.image}}" alt="{{character}}" >
+    </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 
-  <h4>Player Cards</h4>
   {% for player in player_cards %}
-  <div class="character text-center">
-    {{ player.user.username }}: {{ player.character.name }}
-    <img class="character-image" src="{{player.character.image}}" alt="{{player.character}}" >
+  <h4 class="pick-one">{{ player.user.username }}'s card</h4>
+  <div class="disabled">
+    <div class="text-center">
+      {{ player.character.name }}
+      <img class="character-image" src="{{player.character.image}}" alt="{{player.character}}" >
+    </div>
   </div>
   {% endfor %}
 </div>

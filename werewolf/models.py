@@ -91,6 +91,7 @@ class Game(models.Model):
         if char_name in ('Werewolf', 'Minion'):
             wolf_users = [m.user.username for m in game_info['werewolves'] if m.user]
             context['werewolves'] = wolf_users
+
         if char_name == 'Werewolf':
             other_wolf = list(set(wolf_users) - set([matchup.user.username]))
             context['other_wolf'] = other_wolf[0] if other_wolf else []
@@ -101,9 +102,15 @@ class Game(models.Model):
             context['other_mason'] = other_mason[0] if other_mason else []
         elif char_name == 'Seer':
             context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
-            context['player_cards'] = game_info['player_cards']
+            # Remove the seer's card from the player card list
+            context['player_cards'] = list(set(game_info['player_cards']) - \
+                                           set([matchup]))
         elif char_name == 'Robber':
             context['player_cards'] = game_info['player_cards']
+        elif char_name == 'Troublemaker':
+            context['player_cards'] = game_info['player_cards']
+        elif char_name == 'Drunk':
+            context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
 
 
 

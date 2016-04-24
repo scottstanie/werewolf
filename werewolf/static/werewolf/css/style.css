@@ -34,3 +34,11 @@
   max-width:100%;
   max-height:calc(100% - 30px - 1em);
 }
+
+.pick-one {
+  cursor: pointer;
+}
+
+div.disabled {
+  display: none;
+}
