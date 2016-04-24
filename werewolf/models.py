@@ -23,7 +23,7 @@ def find_characters(matchups, character_name):
 
 
 def find_middle_cards(matchups):
-    return [m.character for m in matchups if m.user is None]
+    return [m for m in matchups if m.user is None]
 
 
 def find_player_cards(matchups):
@@ -108,10 +108,12 @@ class Game(models.Model):
         elif char_name == 'Robber':
             context['player_cards'] = list(set(game_info['player_cards']) -
                                            set([matchup]))
+            context['initiator'] = matchup
         elif char_name == 'Troublemaker':
             context['player_cards'] = game_info['player_cards']
         elif char_name == 'Drunk':
             context['middle_cards'] = game_info['middle_cards']
+            context['before_matchup'] = matchup
         elif char_name == 'Insomniac':
             context['your_card'] = matchup
 

@@ -83,6 +83,7 @@ def switch(request, initiator_id, before_id, after_id):
 
     # First record the switch happening
     s = Switch(initiator=initiator, before=before, after=after, game=game)
+    print s
     s.save()
 
     # Then make new matchups for the game

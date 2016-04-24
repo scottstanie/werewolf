@@ -82,15 +82,46 @@ $(document).ready(function(){
   // Drunk view logic
   $('body').on('click', '.drunk.pick-one', function() {
     $('.pick-one').removeClass('pick-one');
+    var afterId = $(this).data('after-id');
+    var beforeId = $(this).data('before-id');
+    // Drunk initiates switch on himself
+    var initiatorId = beforeId;
+    var switchUrl = '/switch/' + initiatorId + '/' + beforeId + '/' + afterId;
+    $.ajax({
+      type: 'POST',
+      url: switchUrl,
+      success: function(result) {
+        console.log(result);
+      }
+    });
   });
 
   // Robber view logic
   $('body').on('click', '.robber.pick-one', function() {
-    var robbedUser = $(this).data('robbed-id')
+    var robbedVictimId = $(this).data('victim-id');
+    var robberId = $(this).data('robber-id');
+    var initiatorId = robberId;
     $(this).next().removeClass('disabled');
     $('.pick-one').removeClass('pick-one');
-    // TODO: record the robbing action
-    // requestUser, robbedId
+
+    // Record a switch for each players card, initiated by the robber
+    var url = '/switch/' + initiatorId + '/' + robberId + '/' + robbedVictimId;
+    $.ajax({
+      type: 'POST',
+      url: url,
+      success: function(result) {
+        console.log(result);
+      }
+    });
+    var url = '/switch/' + initiatorId + '/' + robbedVictimId + '/' + robberId;
+    $.ajax({
+      type: 'POST',
+      url: url,
+      success: function(result) {
+        console.log(result);
+      }
+    });
+
   });
 
 });

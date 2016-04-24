@@ -7,7 +7,7 @@
   {% else %}
   <p>You're a lone wolf!</p>
   <p>Here's a random middle card:</p>
-  {{ middle_card.name }}
-  <img src="{{middle_card.image}}" alt="{{middle_card.name}}" >
+  {{ middle_card.character.name }}
+  <img src="{{middle_card.character.image}}" alt="{{middle_card.character.name}}" >
   {% endif %}
 </div>

@@ -3,11 +3,11 @@
   <img src="{{character.image}}" alt={{character}} >
   <h4>Pick one to switch with yourself!</h4>
   <h4>Middle Cards</h4>
-  {%  for character in middle_cards %}
-  <h4 class="drunk pick-one">This card</h4>
+  {%  for matchup in middle_cards %}
+  <h4 class="drunk pick-one" data-before-id="{{before_matchup.id}}" data-after-id="{{matchup.id}}">This card</h4>
   <div class="disabled text-center">
-    {{ character.name }}
-    <img class="character-image" src="{{character.image}}" alt="{{character}}" >
+    {{ matchup.character.name }}
+    <img class="character-image" src="{{matchup.character.image}}" alt="{{matchup.character}}" >
   </div>
   {% endfor %}
 </div>

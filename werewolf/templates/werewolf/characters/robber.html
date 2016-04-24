@@ -3,7 +3,7 @@
   <img src="{{character.image}}" alt="{{character}}" >
   <h4>Pick one to steal!</h4>
   {% for player in player_cards %}
-  <h4 class="pick-one robber" data-robbed-user="{{player.user.id}}">{{ player.user.username }}'s card</h4>
+  <h4 class="pick-one robber" data-robber-id="{{initiator.id}}" data-victim-id="{{player.id}}">{{ player.user.username }}'s card</h4>
   <div class="disabled">
     <div class="text-center">
       {{ player.character.name }}

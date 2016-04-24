@@ -4,10 +4,10 @@
   <h4>Pick one to look at!</h4>
   <h4 class="pick-one seer">Middle Cards</h4>
   <div class="disabled">
-    {% for character in middle_cards %}
+    {% for matchup in middle_cards %}
     <div class="text-center">
-      {{ character.name }}
-      <img class="character-image" src="{{character.image}}" alt="{{character}}" >
+      {{ matchup.character.name }}
+      <img class="character-image" src="{{matchup.character.image}}" alt="{{matchup.character}}" >
     </div>
     {% endfor %}
   </div>
