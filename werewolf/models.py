@@ -23,7 +23,7 @@ def find_characters(matchups, character_name):
 
 
 def find_middle_cards(matchups):
-    return [m for m in matchups if m.user is None]
+    return [m.character for m in matchups if m.user is None]
 
 
 class Game(models.Model):
@@ -66,10 +66,13 @@ class Game(models.Model):
             'masons': find_characters(matchups, 'Mason'),
             'middle_cards': find_middle_cards(matchups),
         }
+        print 'game_info'
         print game_info
         for m in matchups:
             if m.user:
-                context = create_context(m.character)
+                context = self.create_context(m, game_info)
+                print m
+                print context
                 character_info[m.user.id] = render_to_string(
                     self._character_view(m.character),
                     context=context
@@ -77,10 +80,18 @@ class Game(models.Model):
 
         return character_info
 
-    def create_context(self, character):
-        context = {'character': m.character}
-        if character == 'werewolf':
-            context['other_wolf']
+    def create_context(self, matchup, game_info):
+        context = {'character': matchup.character}
+        if matchup.character.name in ('Werewolf', 'Minion'):
+            wolf_users = [m.user.username for m in game_info['werewolves'] if m.user]
+            context['werewolves'] = wolf_users
+        if matchup.character.name == 'Werewolf':
+            other_wolf = list(set(wolf_users) - set([matchup.user.username]))
+            context['other_wolf'] = other_wolf[0] if other_wolf else []
+            context['middle_card'] = random.choice(game_info['middle_cards'])
+
+
+        return context
 
     def __unicode__(self):
         return self.name

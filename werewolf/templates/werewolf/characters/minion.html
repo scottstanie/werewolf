@@ -1,4 +1,14 @@
 <div>
-  <h3>{{character.name}}!</h3>
-  <img src="{{character.image}}" alt={{character}} \>
+  <h3>{{ character.name }}!</h3>
+  <img src="{{character.image}}" alt={{character}} >
+  {% if werewolves %}
+  <p>Here are your wolves:</p>
+
+  {% for w in werewolves %}
+  <p>{{ w }}</p>
+  {% endfor %}
+
+  {% else %}
+  No wolves! YOU ARE A WOLF!
+  {% endif %}
 </div>
