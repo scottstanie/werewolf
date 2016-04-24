@@ -69,6 +69,9 @@ def ready(request, game_name, user_id):
         allowed = True
     else:
         allowed = False
+
+    print 'allowed'
+    print allowed
     return JsonResponse({'allowed': allowed})
 
 

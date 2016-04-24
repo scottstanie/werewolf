@@ -26,6 +26,10 @@ def find_middle_cards(matchups):
     return [m.character for m in matchups if m.user is None]
 
 
+def find_player_cards(matchups):
+    return [m for m in matchups if m.user]
+
+
 class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     created_date = models.DateTimeField('date created', auto_now_add=True)
@@ -65,6 +69,7 @@ class Game(models.Model):
             'werewolves': find_characters(matchups, 'Werewolf'),
             'masons': find_characters(matchups, 'Mason'),
             'middle_cards': find_middle_cards(matchups),
+            'player_cards': find_player_cards(matchups),
         }
         print 'game_info'
         print game_info
@@ -82,13 +87,24 @@ class Game(models.Model):
 
     def create_context(self, matchup, game_info):
         context = {'character': matchup.character}
-        if matchup.character.name in ('Werewolf', 'Minion'):
+        char_name = matchup.character.name
+        if char_name in ('Werewolf', 'Minion'):
             wolf_users = [m.user.username for m in game_info['werewolves'] if m.user]
             context['werewolves'] = wolf_users
-        if matchup.character.name == 'Werewolf':
+        if char_name == 'Werewolf':
             other_wolf = list(set(wolf_users) - set([matchup.user.username]))
             context['other_wolf'] = other_wolf[0] if other_wolf else []
             context['middle_card'] = random.choice(game_info['middle_cards'])
+        elif char_name == 'Mason':
+            masons = [m.user.username for m in game_info['masons'] if m.user]
+            other_mason = list(set(masons) - set([matchup.user.username]))
+            context['other_mason'] = other_mason[0] if other_mason else []
+        elif char_name == 'Seer':
+            context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
+            context['player_cards'] = game_info['player_cards']
+        elif char_name == 'Robber':
+            context['player_cards'] = game_info['player_cards']
+
 
 
         return context

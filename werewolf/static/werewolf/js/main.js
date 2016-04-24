@@ -27,6 +27,7 @@ $(document).ready(function(){
         $('body').empty();
         $('body').append(data.characters[requestUser]);
       } else {
+        console.log(readyUsers);
         if (! _.includes(readyUsers, data.user)) {
           $('#ready-user-list').append(
               '<li class="ready-user">' + data.user + '</li>'
@@ -39,14 +40,13 @@ $(document).ready(function(){
 
 
   $("#ready").on("click", function() {
-    var url = '/ready/' + gameName + '/' + requestUser;
+    var readyUrl = '/ready/' + gameName + '/' + requestUser;
     var allowed = false;
     $.ajax({
       type: 'GET',
-      url: url,
+      url: readyUrl,
       success: function(result) {
         allowed = result['allowed'];
-        console.log('Ajax return!');
         if (result['allowed']) {
           var message = {
               starting: false,
@@ -58,18 +58,13 @@ $(document).ready(function(){
     });
   });
 
-  $("#start").on("click", function() {
-    var url = '/start/' + gameName;
+  $('body').on('click', '#start', function() {
+    var startUrl = '/start/' + gameName;
     var chosenCharacters = getChosenCharacters();
-    console.log(chosenCharacters);
     $.ajax({
       type: 'POST',
-      url: url,
+      url: startUrl,
       data: {chars: JSON.stringify(chosenCharacters)},
-      success: function(result) {
-        console.log('Ajax return!');
-        console.log(result);
-      },
     });
   });
 

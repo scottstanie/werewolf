@@ -30,7 +30,7 @@
   padding: 2px;
 }
 
-.characterImage {
+.character-image {
   max-width:100%;
   max-height:calc(100% - 30px - 1em);
 }
