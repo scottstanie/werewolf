@@ -74,11 +74,18 @@ $(document).ready(function(){
   });
 
   // Seer view logic
-  $('body').on('click', '.pick-one', function() {
-    console.log(this);
-    console.log($(this).next());
+  $('body').on('click', '.seer.pick-one', function() {
     $(this).next().removeClass('disabled');
     $('.pick-one').removeClass('pick-one');
+  });
+
+  // Robber view logic
+  $('body').on('click', '.robber.pick-one', function() {
+    var robbedUser = $(this).data('robbed-id')
+    $(this).next().removeClass('disabled');
+    $('.pick-one').removeClass('pick-one');
+    // TODO: record the robbing action
+    // requestUser, robbedId
   });
 
 });

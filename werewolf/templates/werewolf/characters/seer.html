@@ -2,7 +2,7 @@
   <h3>{{character.name}}!</h3>
   <img src="{{character.image}}" alt={{character}} >
   <h4>Pick one to look at!</h4>
-  <h4 class="pick-one">Middle Cards</h4>
+  <h4 class="pick-one seer">Middle Cards</h4>
   <div class="disabled">
     {% for character in middle_cards %}
     <div class="text-center">
@@ -13,7 +13,7 @@
   </div>
 
   {% for player in player_cards %}
-  <h4 class="pick-one">{{ player.user.username }}'s card</h4>
+  <h4 class="pick-one seer">{{ player.user.username }}'s card</h4>
   <div class="disabled">
     <div class="text-center">
       {{ player.character.name }}
