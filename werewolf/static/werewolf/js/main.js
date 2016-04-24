@@ -79,6 +79,11 @@ $(document).ready(function(){
     $('.pick-one').removeClass('pick-one');
   });
 
+  // Drunk view logic
+  $('body').on('click', '.drunk.pick-one', function() {
+    $('.pick-one').removeClass('pick-one');
+  });
+
   // Robber view logic
   $('body').on('click', '.robber.pick-one', function() {
     var robbedUser = $(this).data('robbed-id')

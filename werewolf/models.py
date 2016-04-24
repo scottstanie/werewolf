@@ -102,15 +102,18 @@ class Game(models.Model):
             context['other_mason'] = other_mason[0] if other_mason else []
         elif char_name == 'Seer':
             context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
-            # Remove the seer's card from the player card list
+            # Remove the current player's card from the player_cards list
             context['player_cards'] = list(set(game_info['player_cards']) - \
                                            set([matchup]))
         elif char_name == 'Robber':
-            context['player_cards'] = game_info['player_cards']
+            context['player_cards'] = list(set(game_info['player_cards']) - \
+                                           set([matchup]))
         elif char_name == 'Troublemaker':
             context['player_cards'] = game_info['player_cards']
         elif char_name == 'Drunk':
-            context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
+            context['middle_cards'] = game_info['middle_cards']
+        elif char_name == 'Insomniac':
+            context['your_card'] = matchup
 
 
 
