@@ -103,10 +103,10 @@ class Game(models.Model):
         elif char_name == 'Seer':
             context['middle_cards'] = random.sample(game_info['middle_cards'], 2)
             # Remove the current player's card from the player_cards list
-            context['player_cards'] = list(set(game_info['player_cards']) - \
+            context['player_cards'] = list(set(game_info['player_cards']) -
                                            set([matchup]))
         elif char_name == 'Robber':
-            context['player_cards'] = list(set(game_info['player_cards']) - \
+            context['player_cards'] = list(set(game_info['player_cards']) -
                                            set([matchup]))
         elif char_name == 'Troublemaker':
             context['player_cards'] = game_info['player_cards']
@@ -114,8 +114,6 @@ class Game(models.Model):
             context['middle_cards'] = game_info['middle_cards']
         elif char_name == 'Insomniac':
             context['your_card'] = matchup
-
-
 
         return context
 
@@ -145,8 +143,10 @@ class Matchup(models.Model):
 
 class Switch(models.Model):
     '''A switch action in a game'''
-    victim = models.ForeignKey(User, related_name='victim', default=1)
-    initiator = models.ForeignKey(User, related_name='initiator', default=1)
+    initiator = models.ForeignKey(Matchup, related_name='initiator', default=1)
+    before = models.ForeignKey(Matchup, related_name='before', default=1)
+    after = models.ForeignKey(Matchup, related_name='after', default=1)
+    game = models.ForeignKey(Game)
 
     def __unicode__(self):
-        return '%s switched %s' % (self.initiator, self.victim)
+        return '%s made %s into %s' % (self.initiator, self.before, self.after)

@@ -73,6 +73,24 @@ def ready(request, game_name, user_id):
     return JsonResponse({'allowed': allowed})
 
 
+@require_http_methods(['POST'])
+def switch(request, initiator_id, before_id, after_id):
+    '''User has iniatiated a switch of the cards'''
+    initiator = get_object_or_404(Matchup, id=initiator_id)
+    before = get_object_or_404(Matchup, id=before_id)
+    after = get_object_or_404(Matchup, id=after_id)
+    game = initiator.game
+
+    # First record the switch happening
+    s = Switch(initiator=initiator, before=before, after=after, game=game)
+    s.save()
+
+    # Then make new matchups for the game
+    m = Matchup(user=before.user, character=after.character, game=game)
+    m.save()
+
+    return JsonResponse({'ok': 'ok'})
+
 
 @require_http_methods(['POST'])
 def start(request, game_name):
