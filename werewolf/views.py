@@ -101,17 +101,25 @@ def start(request, game_name):
     random.shuffle(characters)
 
     game = get_object_or_404(Game, name=game_name)
+    game.num_cards_selected = len(characters_chosen)
 
     # {user_id: '<html of character for this user>'}
-    character_info = game.generate_matchups(characters)
+    matchups = game.generate_matchups(characters)
+    character_info = game.get_character_info(matchups)
     print character_info
     game.started = True
-    game.save(update_fields=['started'])
+    game.current_stage = 1
+
+    # game.save(update_fields=['started'])
+    game.save()
 
     Group(game.form_groupname()).send({
+        # Channel messages need 'text' as a key
         'text': json.dumps({
             'starting': True,
-            'characters': character_info
+            'characters': character_info,
+            'current_stage': game.current_stage,
+            'stage_info': game.stage_info()
         })
     })
     return JsonResponse(character_info)

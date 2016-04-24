@@ -25,7 +25,9 @@ $(document).ready(function(){
       if (data.starting) {
         console.log(data);
         $('body').empty();
-        $('body').append(data.characters[requestUser]);
+        if (data.stage_info[requestUser] === data.current_stage){
+          $('body').append(data.characters[requestUser]);
+        };
       } else {
         console.log(readyUsers);
         if (! _.includes(readyUsers, data.user)) {

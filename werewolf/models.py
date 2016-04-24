@@ -36,9 +36,37 @@ class Game(models.Model):
     started = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
     present = ArrayField(models.CharField(max_length=10), null=True, default=[])
+    current_stage = models.IntegerField(default=0)
+    num_cards_selected = models.IntegerField(default=0)
 
     def num_users(self):
         return self.users.count()
+
+    def num_middle_cards(self):
+        '''This should be 3, but just in case (shrug)'''
+        return self.users.count() - self.num_cards_selected
+
+    def current_middle_cards(self):
+        '''The most recent matchups for this game
+        where user_id is None, meaning middle card'''
+        return self.matchup_set.filter(user=None)\
+                               .order_by('-id')[:self.num_middle_cards]
+
+    def current_matchups(self):
+        '''The most recent matchups for this game
+        where user_id is NOT None'''
+        return self.matchup_set.exclude(user=None)\
+                               .order_by('-id')[:self.num_users()]
+
+    def stage_info(self):
+        '''Output: {user_id: character__stage}
+        Used to determing if a player should be shown
+         there nighttime view or if they need to wait'''
+        matchups = self.matchup_set\
+                       .exclude(user=None)\
+                       .order_by('-id')\
+                       .values('user_id', 'character__stage')[:self.num_users()]
+        return {m['user_id']: m['character__stage'] for m in matchups}
 
     def form_groupname(self):
         '''Used for the group channel of a game'''
@@ -60,11 +88,12 @@ class Game(models.Model):
                          for t in matchup_tuples]
 
         matchups = [Matchup(**m) for m in matchup_dicts]
-
-        character_info = {}
         for m in matchups:
             m.save()
 
+        return matchups
+
+    def get_character_info(self, matchups):
         game_info = {
             'werewolves': find_characters(matchups, 'Werewolf'),
             'masons': find_characters(matchups, 'Mason'),
@@ -73,6 +102,7 @@ class Game(models.Model):
         }
         print 'game_info'
         print game_info
+        character_info = {}
         for m in matchups:
             if m.user:
                 context = self.create_context(m, game_info)
@@ -128,6 +158,7 @@ class Character(models.Model):
     image = models.FilePathField(path=join('/static', 'werewolf', 'images'),
                                  recursive=True, blank=True, null=True)
     users = models.ManyToManyField(User, through='Matchup')
+    stage = models.IntegerField(default=0)
 
     def __unicode__(self):
         return self.name
