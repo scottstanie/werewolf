@@ -215,7 +215,7 @@ function startTimer(duration, $display, gameName) {
     var timer = duration;
     var minutes, seconds;
 
-    function checkFinished(timer, gameName, intervalId) {
+    function checkFinished(gameName, intervalId) {
       // End condition
       if (timer === 0) {
           clearInterval(intervalId);
@@ -225,7 +225,7 @@ function startTimer(duration, $display, gameName) {
       } else {
         // otherwise, check in a second
         setTimeout(function() {
-          checkFinished(timer, gameName, intervalId);
+          checkFinished(gameName, intervalId);
         }, 1000)
       };
     }
@@ -244,7 +244,7 @@ function startTimer(duration, $display, gameName) {
     // Tick every second
     }, 1000);
 
-    checkFinished(timer, gameName, intervalId);
+    checkFinished(gameName, refreshIntervalId);
 }
 
 function triggerVoting(gameName) {
