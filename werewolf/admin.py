@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Game, Character, Switch, Matchup
+from .models import Game, Character, Switch, Matchup, Vote
 
 
 class GameAdmin(admin.ModelAdmin):
@@ -24,3 +24,4 @@ admin.site.register(Game, GameAdmin)
 admin.site.register(Character, CharacterAdmin)
 admin.site.register(Switch)
 admin.site.register(Matchup)
+admin.site.register(Vote)

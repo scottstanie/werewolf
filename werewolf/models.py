@@ -192,3 +192,13 @@ class Switch(models.Model):
 
     def __unicode__(self):
         return '%s made %s into %s' % (self.initiator, self.before, self.after)
+
+
+class Vote(models.Model):
+    '''An endgame vote'''
+    voted_for = models.ForeignKey(Matchup, related_name='voted_for', default=1)
+    voter = models.ForeignKey(Matchup, related_name='voter', default=1)
+    game = models.ForeignKey(Game)
+
+    def __unicode__(self):
+        return '%s voted for %s in %s' % (self.voter, self.voted_for, self.game)

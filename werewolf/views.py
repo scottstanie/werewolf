@@ -4,11 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
 from django.views.generic.edit import CreateView
 from django.views.decorators.http import require_http_methods
 from channels import Group
 
-from .models import Game, Character, Switch, Matchup
+from .models import Game, Character, Switch, Matchup, Vote
 from django.contrib.auth.models import User
 
 
@@ -159,3 +160,21 @@ def advance(request, game_name, user_id):
         })
     })
     return JsonResponse(character_info)
+
+
+@require_http_methods(['GET', 'POST'])
+def vote(request, game_name):
+    game = get_object_or_404(Game, name=game_name)
+    if request.method == 'GET':
+        users = game.users.order_by('username')
+        print users
+        context = {'players': users}
+        template_string = render_to_string('werewolf/vote.html', context)
+        return JsonResponse({'template': template_string})
+    elif request.method == 'POST':
+        player_id = request.POST['playerId']
+        voted_for = Matchup.objects.filter(game=game, user_id=player_id).order_by('-id').first()
+        voter = Matchup.objects.filter(game=game, user_id=request.user.id).order_by('-id').first()
+        v = Vote(voted_for=voted_for, voter=voter, game=game)
+        v.save()
+        return JsonResponse({'vote_id': v.id})

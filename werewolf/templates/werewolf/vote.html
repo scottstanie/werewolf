@@ -1,0 +1,11 @@
+<div>
+  <h3>Choose one to vote for!</h3>
+  {% for player in players %}
+  <div class="game-box pick-one vote" data-player-id="{{player.id}}">
+    <h4>{{ player.username }}</h4>
+  </div>
+  {% endfor %}
+  <div class="game-box pick-one vote" data-player-id="0">
+    <h4>Nobody!</h4>
+  </div>
+</div>

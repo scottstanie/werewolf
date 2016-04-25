@@ -148,7 +148,20 @@ $(document).ready(function(){
         console.log(result);
       }
     });
+  });
 
+  // Voting view logic
+  $('body').on('click', '.vote.pick-one', function() {
+    $('.pick-one').removeClass('pick-one');
+    var playerId = $(this).data('player-id');
+    var voteUrl = '/vote/' + gameName;
+    $.ajax({
+      type: 'POST',
+      url: voteUrl,
+      data: {
+        playerId: playerId,
+      }
+    });
   });
 
 });
@@ -214,19 +227,26 @@ function triggerVoting() {
   }, 500);
   setTimeout(function() {
     $('#timer').text('3!');
-  };
   }, 2000);
   setTimeout(function() {
     $('#timer').text('2!');
-  };
   }, 3000);
   setTimeout(function() {
     $('#timer').text('1!');
-  };
   }, 4000);
   setTimeout(function() {
     $('#timer').text('Vote!');
   }, 5000);
+  $.ajax({
+    type: 'GET',
+    url: '/vote/' + gameName,
+    success: function(result) {
+      console.log(result);
+      $('body').empty();
+      $('body').append(result['template']);
+    },
+  });
+
 }
 
 function getCookie(name) {
