@@ -167,9 +167,10 @@ def vote(request, game_name):
     game = get_object_or_404(Game, name=game_name)
     if request.method == 'GET':
         users = game.users.order_by('username')
-        print users
-        context = {'players': users}
-        template_string = render_to_string('werewolf/vote.html', context)
+        template_string = render_to_string(
+            'werewolf/vote.html',
+            {'players': users}
+        )
         return JsonResponse({'template': template_string})
     elif request.method == 'POST':
         player_id = request.POST['playerId']

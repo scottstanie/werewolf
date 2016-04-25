@@ -201,4 +201,4 @@ class Vote(models.Model):
     game = models.ForeignKey(Game)
 
     def __unicode__(self):
-        return '%s voted for %s in %s' % (self.voter, self.voted_for, self.game)
+        return '%s voted for %s in %s' % (self.voter, self.voted_for, self.after)

@@ -14,7 +14,6 @@ $(document).ready(function(){
   var username = $gameInfo.data('username');
   var gameName = $gameInfo.data('game-name');
   var gameSize = parseInt($('#game-size').text());
-  var countdownTime = parseInt($('#countdown-time').text());
   var readyUsers = findReadyUsers();
   checkGameReady(readyUsers, gameSize);
 
@@ -23,13 +22,15 @@ $(document).ready(function(){
   var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
 
   // Only set the stage info on the first round of moves
-  var stageInfo;
+  var stageInfo, countdownTime, moveTime;
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
       if (data.starting || data.advancing) {
           console.log(data);
           if (data.starting) {
             stageInfo = data.stage_info;
+            countdownTime = parseInt($('#countdown-time').val());
+            moveTime = parseInt($('#move-time').val());
           };
           console.log('Stage Info:');
           console.log(stageInfo);
@@ -46,8 +47,8 @@ $(document).ready(function(){
           } else {
             $('body').append('<h2>Waiting...</h2>');
           };
-          // Add jitter to 10 seconds to signal 'ready to advance'
-          var waitTime = 10000 + (200 * requestUser * Math.random());
+          // Add jitter to moveTime seconds to signal 'ready to advance'
+          var waitTime = (moveTime * 1000) + (200 * (requestUser % 10) * Math.random());
           setTimeout(
               function() {
                 signalAdvance(gameName, requestUser);
