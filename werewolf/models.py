@@ -1,5 +1,5 @@
 import random
-from itertools import izip_longest
+from itertools import izip_longest, chain
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
@@ -35,8 +35,9 @@ class Game(models.Model):
     created_date = models.DateTimeField('date created', auto_now_add=True)
     started = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
-    present = ArrayField(models.CharField(max_length=10), null=True, default=[])
+    present = ArrayField(models.CharField(max_length=30), null=True, default=[])
     current_stage = models.IntegerField(default=0)
+    ready_to_advance = ArrayField(models.CharField(max_length=30), null=True, default=[])
     num_cards_selected = models.IntegerField(default=0)
 
     def num_users(self):
@@ -44,19 +45,27 @@ class Game(models.Model):
 
     def num_middle_cards(self):
         '''This should be 3, but just in case (shrug)'''
-        return self.users.count() - self.num_cards_selected
+        return self.num_cards_selected - self.users.count()
 
-    def current_middle_cards(self):
+    def _current_middle_cards(self):
         '''The most recent matchups for this game
         where user_id is None, meaning middle card'''
         return self.matchup_set.filter(user=None)\
-                               .order_by('-id')[:self.num_middle_cards]
+                               .order_by('-id')[:self.num_middle_cards()]
+
+    def _current_player_cards(self):
+        '''The most recent matchup for this game
+        for each user in the game'''
+        return Matchup.objects.filter(game_id=self.id)\
+                              .exclude(user=None)\
+                              .order_by('user_id', '-id')\
+                              .distinct('user_id')
 
     def current_matchups(self):
-        '''The most recent matchups for this game
-        where user_id is NOT None'''
-        return self.matchup_set.exclude(user=None)\
-                               .order_by('-id')[:self.num_users()]
+        '''The whole set of current matchups
+        Must look for null user_id matchups separately,
+            in case Switches have pushed these down in time'''
+        return list(chain(self._current_player_cards(), self._current_middle_cards()))
 
     def stage_info(self):
         '''Output: {user_id: character__stage}

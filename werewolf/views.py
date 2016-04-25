@@ -59,6 +59,7 @@ def profile(request):
     return render(request, 'werewolf/profile.html', context)
 
 
+@require_http_methods(['POST'])
 def ready(request, game_name, user_id):
     '''User has signalled they are ready for the game to start'''
     user = get_object_or_404(User, id=user_id)
@@ -120,6 +121,41 @@ def start(request, game_name):
             'characters': character_info,
             'current_stage': game.current_stage,
             'stage_info': game.stage_info()
+        })
+    })
+    return JsonResponse(character_info)
+
+
+@require_http_methods(['POST'])
+def advance(request, game_name, user_id):
+    user = get_object_or_404(User, id=user_id)
+    game = get_object_or_404(Game, name=game_name)
+
+    # Make sure no hackin
+    print 'ADVANCE!'
+    print user_id, game.ready_to_advance
+    if user in game.users.all():
+        game.ready_to_advance = list(set(game.ready_to_advance + [user.username]))
+        game.save()
+
+    # If there are still others, don't advance yet
+    if len(game.ready_to_advance) < game.num_users():
+        return JsonResponse({'num_ready': len(game.ready_to_advance)})
+
+    matchups = game.current_matchups()
+    character_info = game.get_character_info(matchups)
+    print character_info
+
+    game.current_stage += 1
+    game.ready_to_advance = []
+    game.save()
+
+    Group(game.form_groupname()).send({
+        # Channel messages need 'text' as a key
+        'text': json.dumps({
+            'advancing': True,
+            'characters': character_info,
+            'current_stage': game.current_stage,
         })
     })
     return JsonResponse(character_info)

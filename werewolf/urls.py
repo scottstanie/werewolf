@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^about/$', views.about, name='about'),
     url(r'^game/(?P<name>\w+)', views.game, name='game'),
     url(r'^ready/(?P<game_name>\w+)/(?P<user_id>\w+)$', views.ready, name='ready'),
+    url(r'^advance/(?P<game_name>\w+)/(?P<user_id>\w+)$', views.advance, name='advance'),
     url(r'^switch/(?P<initiator_id>\d+)/(?P<before_id>\d+)/(?P<after_id>\d+)$', views.switch, name='switch'),
     url(r'^start/(?P<game_name>\w+)$', views.start, name='start'),
     url(r'^create/$',

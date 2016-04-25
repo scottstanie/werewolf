@@ -1,3 +1,4 @@
+window.stageInfo = {};
 $(document).ready(function(){
   // CSRF setup for ajax calls
   var csrftoken = getCookie('csrftoken');
@@ -13,6 +14,7 @@ $(document).ready(function(){
   var username = $gameInfo.data('username');
   var gameName = $gameInfo.data('game-name');
   var gameSize = parseInt($('#game-size').text());
+  var countdownTime = parseInt($('#countdown-time').text());
   var readyUsers = findReadyUsers();
   checkGameReady(readyUsers, gameSize);
 
@@ -20,14 +22,37 @@ $(document).ready(function(){
   var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
   var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
 
+  // Only set the stage info on the first round of moves
+  var stageInfo;
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
-      if (data.starting) {
-        console.log(data);
-        $('body').empty();
-        if (data.stage_info[requestUser] === data.current_stage){
-          $('body').append(data.characters[requestUser]);
-        };
+      if (data.starting || data.advancing) {
+          console.log(data);
+          if (data.starting) {
+            stageInfo = data.stage_info;
+          };
+          console.log('Stage Info:');
+          console.log(stageInfo);
+
+          $('body').empty();
+          if (data.current_stage > 4) {
+            $('body').append('<h2 id="timer"></h2>')
+            startTimer(countdownTime, $('#timer'));
+            return;
+
+          } else if ((stageInfo[requestUser] === 0) ||
+              (stageInfo[requestUser] === data.current_stage)) {
+            $('body').append(data.characters[requestUser]);
+          } else {
+            $('body').append('<h2>Waiting...</h2>');
+          };
+          // Add jitter to 10 seconds to signal 'ready to advance'
+          var waitTime = 10000 + (200 * requestUser * Math.random());
+          setTimeout(
+              function() {
+                signalAdvance(gameName, requestUser);
+              }, waitTime
+          );
       } else {
         console.log(readyUsers);
         if (! _.includes(readyUsers, data.user)) {
@@ -45,7 +70,7 @@ $(document).ready(function(){
     var readyUrl = '/ready/' + gameName + '/' + requestUser;
     var allowed = false;
     $.ajax({
-      type: 'GET',
+      type: 'POST',
       url: readyUrl,
       success: function(result) {
         allowed = result['allowed'];
@@ -150,6 +175,58 @@ function getChosenCharacters() {
   return $.map($('.character.chosen'), function(c) {
     return $(c).children('p').data('id');
   })
+}
+
+function signalAdvance(gameName, userId) {
+  var readyUrl = '/advance/' + gameName + '/' + userId;
+  $.ajax({
+    type: 'POST',
+    url: readyUrl,
+    success: function(result) {
+      console.log(result);
+    },
+  });
+}
+
+function startTimer(duration, $display) {
+    var timer = duration;
+    var minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        $display.text(minutes + ":" + seconds);
+
+        if (--timer < 0) {
+            triggerVoting();
+        }
+    // Tick every second
+    }, 1000);
+}
+
+function triggerVoting() {
+  console.log('VOTE!');
+  setTimeout(function() {
+    $('#timer').text('Time is up!');
+  }, 500);
+  setTimeout(function() {
+    $('#timer').text('3!');
+  };
+  }, 2000);
+  setTimeout(function() {
+    $('#timer').text('2!');
+  };
+  }, 3000);
+  setTimeout(function() {
+    $('#timer').text('1!');
+  };
+  }, 4000);
+  setTimeout(function() {
+    $('#timer').text('Vote!');
+  }, 5000);
 }
 
 function getCookie(name) {
