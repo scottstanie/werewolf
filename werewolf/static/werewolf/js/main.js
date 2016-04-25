@@ -229,9 +229,10 @@ function startTimer(duration, $display, gameName) {
     // Tick every second
     }, 1000);
     setInterval(function() {
-      if (timer < 0) {
+      if (timer === 0) {
           clearInterval(refreshIntervalId);
           triggerVoting(gameName);
+          timer--;
           return;
       }
     }, 1000);
@@ -259,8 +260,10 @@ function triggerVoting(gameName) {
     url: '/vote/' + gameName,
     success: function(result) {
       console.log(result);
-      $('body').empty();
-      $('body').append(result['template']);
+      setTimeout(function() {
+        $('body').empty();
+        $('body').append(result['template']);
+      }, 5500);
     },
   });
 

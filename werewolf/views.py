@@ -145,7 +145,6 @@ def advance(request, game_name, user_id):
     print 'current_matchups'
     print current_matchups
     character_info = game.get_character_info(current_matchups)
-    print character_info
 
     game.current_stage += 1
     game.ready_to_advance = []

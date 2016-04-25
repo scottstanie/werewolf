@@ -127,7 +127,7 @@ class Game(models.Model):
                 print 'Now is ', m
                 print context
                 character_info[m.user.id] = render_to_string(
-                    self._character_view(m.character),
+                    self._character_view(original_matchup.character),
                     context=context
                 )
 
