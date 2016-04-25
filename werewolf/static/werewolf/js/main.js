@@ -243,6 +243,8 @@ function startTimer(duration, $display, gameName) {
 
     // Tick every second
     }, 1000);
+
+    checkFinished(timer, gameName, intervalId);
 }
 
 function triggerVoting(gameName) {
