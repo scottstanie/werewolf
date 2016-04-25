@@ -215,6 +215,21 @@ function startTimer(duration, $display, gameName) {
     var timer = duration;
     var minutes, seconds;
 
+    function checkFinished(timer, gameName, intervalId) {
+      // End condition
+      if (timer === 0) {
+          clearInterval(intervalId);
+          triggerVoting(gameName);
+          timer--;
+          return true;
+      } else {
+        // otherwise, check in a second
+        setTimeout(function() {
+          checkFinished(timer, gameName, intervalId);
+        }, 1000)
+      };
+    }
+
     refreshIntervalId = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
@@ -227,14 +242,6 @@ function startTimer(duration, $display, gameName) {
         timer--;
 
     // Tick every second
-    }, 1000);
-    setInterval(function() {
-      if (timer === 0) {
-          clearInterval(refreshIntervalId);
-          triggerVoting(gameName);
-          timer--;
-          return;
-      }
     }, 1000);
 }
 
@@ -255,6 +262,7 @@ function triggerVoting(gameName) {
   setTimeout(function() {
     $('#timer').text('Vote!');
   }, 5000);
+  // Retrieve the voting view
   $.ajax({
     type: 'GET',
     url: '/vote/' + gameName,

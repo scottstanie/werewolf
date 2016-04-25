@@ -192,7 +192,6 @@ class Matchup(models.Model):
     user = models.ForeignKey(User, null=True)
     character = models.ForeignKey(Character)
     game = models.ForeignKey(Game)
-    is_final = models.BooleanField(default=False)
 
     def __unicode__(self):
         return '%s as %s in %s' % (self.user, self.character, self.game)
