@@ -35,7 +35,6 @@ def ws_connect(message):
 @channel_session
 def ws_receive(message):
     name = message.channel_session['gamename']
-    game = Game.objects.get(name=name)
     data = json.loads(message['text'])
     print 'data?', data
     Group(form_groupname(name)).send({'text': json.dumps(data)})

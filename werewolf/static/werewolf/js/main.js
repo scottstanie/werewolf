@@ -26,19 +26,22 @@ $(document).ready(function(){
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
       if (data.starting || data.advancing) {
+
           console.log(data);
           if (data.starting) {
             stageInfo = data.stage_info;
-            countdownTime = parseInt($('#countdown-time').val());
-            moveTime = parseInt($('#move-time').val());
+            countdownTime = data.countdown_time;
+            // Define the movetime only for the game driver
+            moveTime = 1000 * parseInt($('#move-time').val());
           };
+
           console.log('Stage Info:');
           console.log(stageInfo);
 
           $('body').empty();
           if (data.current_stage > 4) {
             $('body').append('<h2 id="timer"></h2>')
-            startTimer(countdownTime, $('#timer'));
+            startTimer(countdownTime, $('#timer'), gameName);
             return;
 
           } else if ((stageInfo[requestUser] === 0) ||
@@ -47,13 +50,15 @@ $(document).ready(function(){
           } else {
             $('body').append('<h2>Waiting...</h2>');
           };
-          // Add jitter to moveTime seconds to signal 'ready to advance'
-          var waitTime = (moveTime * 1000) + (200 * (requestUser % 10) * Math.random());
-          setTimeout(
-              function() {
-                signalAdvance(gameName, requestUser);
-              }, waitTime
-          );
+          console.log('Wait Time');
+          console.log(moveTime);
+          if (!isNaN(moveTime)) {
+            setTimeout(
+                function() {
+                  signalAdvance(gameName, requestUser);
+                }, moveTime
+            );
+          }
       } else {
         console.log(readyUsers);
         if (! _.includes(readyUsers, data.user)) {
@@ -87,12 +92,16 @@ $(document).ready(function(){
   });
 
   $('body').on('click', '#start', function() {
+    countdownTime = 60 * parseInt($('#countdown-time').val());
     var startUrl = '/start/' + gameName;
     var chosenCharacters = getChosenCharacters();
     $.ajax({
       type: 'POST',
       url: startUrl,
-      data: {chars: JSON.stringify(chosenCharacters)},
+      data: {
+        chars: JSON.stringify(chosenCharacters),
+        countdownTime: countdownTime,
+      },
     });
   });
 
@@ -202,10 +211,11 @@ function signalAdvance(gameName, userId) {
   });
 }
 
-function startTimer(duration, $display) {
+function startTimer(duration, $display, gameName) {
     var timer = duration;
     var minutes, seconds;
-    setInterval(function () {
+
+    refreshIntervalId = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -214,14 +224,20 @@ function startTimer(duration, $display) {
 
         $display.text(minutes + ":" + seconds);
 
-        if (--timer < 0) {
-            triggerVoting();
-        }
+        timer--;
+
     // Tick every second
+    }, 1000);
+    setInterval(function() {
+      if (timer < 0) {
+          clearInterval(refreshIntervalId);
+          triggerVoting(gameName);
+          return;
+      }
     }, 1000);
 }
 
-function triggerVoting() {
+function triggerVoting(gameName) {
   console.log('VOTE!');
   setTimeout(function() {
     $('#timer').text('Time is up!');

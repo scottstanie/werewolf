@@ -100,7 +100,8 @@ def start(request, game_name):
     '''User has signalled to start the game'''
     characters_chosen = json.loads(request.POST['chars'])
     characters = list(Character.objects.filter(id__in=characters_chosen))
-    random.shuffle(characters)
+    # random.shuffle(characters)
+    characters.sort(key=lambda c: c.id, reverse=True)
 
     game = get_object_or_404(Game, name=game_name)
     game.num_cards_selected = len(characters_chosen)
@@ -115,10 +116,12 @@ def start(request, game_name):
     # game.save(update_fields=['started'])
     game.save()
 
+    countdown_time = json.loads(request.POST['countdownTime'])
     Group(game.form_groupname()).send({
         # Channel messages need 'text' as a key
         'text': json.dumps({
             'starting': True,
+            'countdown_time': countdown_time,
             'characters': character_info,
             'current_stage': game.current_stage,
             'stage_info': game.stage_info()
@@ -135,16 +138,13 @@ def advance(request, game_name, user_id):
     # Make sure no hackin
     print 'ADVANCE!'
     print user_id, game.ready_to_advance
-    if user in game.users.all():
-        game.ready_to_advance = list(set(game.ready_to_advance + [user.username]))
-        game.save()
+    if user not in game.users.all():
+        return JsonResponse({'allowed': False})
 
-    # If there are still others, don't advance yet
-    if len(game.ready_to_advance) < game.num_users():
-        return JsonResponse({'num_ready': len(game.ready_to_advance)})
-
-    matchups = game.current_matchups()
-    character_info = game.get_character_info(matchups)
+    current_matchups = game.current_matchups()
+    print 'current_matchups'
+    print current_matchups
+    character_info = game.get_character_info(current_matchups)
     print character_info
 
     game.current_stage += 1

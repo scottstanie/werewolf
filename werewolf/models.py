@@ -67,6 +67,12 @@ class Game(models.Model):
             in case Switches have pushed these down in time'''
         return list(chain(self._current_player_cards(), self._current_middle_cards()))
 
+    def original_matchup(self, user_id):
+        '''The original matchup for this game for this user'''
+        return Matchup.objects.filter(game_id=self.id, user_id=user_id)\
+                              .order_by('id')\
+                              .first()
+
     def stage_info(self):
         '''Output: {user_id: character__stage}
         Used to determing if a player should be shown
@@ -82,7 +88,7 @@ class Game(models.Model):
         return 'game-%s' % self.name
 
     def _character_view(self, character):
-        '''Input: name of character
+        '''Input: Character model
         output: string the html file for the character'''
         return 'werewolf/characters/%s.html' % character.name.lower()
 
@@ -114,8 +120,11 @@ class Game(models.Model):
         character_info = {}
         for m in matchups:
             if m.user:
-                context = self.create_context(m, game_info)
-                print m
+                original_matchup = self.original_matchup(m.user.id)
+                context = self.create_context(m, game_info,
+                                              original_matchup.character)
+                print 'Used to be ', original_matchup
+                print 'Now is ', m
                 print context
                 character_info[m.user.id] = render_to_string(
                     self._character_view(m.character),
@@ -124,9 +133,15 @@ class Game(models.Model):
 
         return character_info
 
-    def create_context(self, matchup, game_info):
-        context = {'character': matchup.character}
-        char_name = matchup.character.name
+    def create_context(self, matchup, game_info, original_character=None):
+        '''matchup- Matchup model, is the current matchup for this user
+            game_info- dict, is the current state of the game
+             original_character- Character model, is used to determine
+                which view to show the user
+                '''
+        char_name = original_character.name or matchup.character.name
+
+        context = {'character': original_character}
         if char_name in ('Werewolf', 'Minion'):
             wolf_users = [m.user.username for m in game_info['werewolves'] if m.user]
             context['werewolves'] = wolf_users
