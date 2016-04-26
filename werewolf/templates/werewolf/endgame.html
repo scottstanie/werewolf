@@ -1,0 +1,47 @@
+{% extends "werewolf/layout.html" %}
+
+{% block body %}
+
+{% if error_message %}
+  {{error_message}}
+{% endif %}
+
+<div id="game-info" data-game-name="{{ game.name }}" data-request-user="{{user.id}}" data-username="{{user.username}}" class="container">
+  <h1>{{ game.name }}</h1>
+  <h3> Game Over! </h3>
+  <h3> Winning Teams: </h3>
+  <ul id="ready-user-list">
+    {% for team in game.winning_teams %}
+    <li class="presentation">{{team}}</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Original Setup</h3>
+  {% for player in original_matchups %}
+  {% if player.user %}
+    <h4>{{ player.user.username }}</h4>
+  {% else %}
+    <h4>Middle Card</h4>
+  {% endif %}
+
+  <div class="characters">
+    {{ player.character.name }}
+    <img class="character-image" src="{{player.character.image}}" alt="{{player.character}}" >
+  </div>
+  {% endfor %}
+
+  <h3>Final Setup</h3>
+  {% for player in final_matchups %}
+  {% if player.user %}
+    <h4>{{ player.user.username }}</h4>
+  {% else %}
+    <h4>Middle Card</h4>
+  {% endif %}
+
+  <div class="characters">
+    {{ player.character.name }}
+    <img class="character-image" src="{{player.character.image}}" alt="{{player.character}}" >
+  </div>
+  {% endfor %}
+
+{% endblock %}

@@ -81,6 +81,12 @@ class Game(models.Model):
                               .order_by('id')\
                               .first()
 
+    def original_matchups(self):
+        '''The entire original setup of the game'''
+        return Matchup.objects.filter(game_id=self.id)\
+                              .order_by('id')\
+                              .all()[:self.num_cards_selected]
+
     def stage_info(self):
         '''Output: {user_id: character__stage}
         Used to determing if a player should be shown

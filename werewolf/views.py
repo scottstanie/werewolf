@@ -29,11 +29,21 @@ def game(request, name=None):
             'error_message': "This game doesn't exist.",
         })
 
-    context = {
-        'game': g,
-        'characters': Character.objects.order_by('id').all(),
-    }
-    return render(request, 'werewolf/game.html', context)
+    if g.finished is False:
+        context = {
+            'game': g,
+            'characters': Character.objects.order_by('id').all(),
+        }
+        return render(request, 'werewolf/game.html', context)
+    else:
+        vote_counts, winners = g.tally_votes()
+
+        context = {
+            'game': g,
+            'final_matchups': g.current_matchups(),
+            'original_matchups': g.original_matchups(),
+        }
+        return render(request, 'werewolf/endgame.html', context)
 
 
 class GameCreate(CreateView):
