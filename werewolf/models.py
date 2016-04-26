@@ -186,8 +186,11 @@ class Game(models.Model):
 
     def tally_votes(self):
         votes = self.vote_set.all()
-        eligible_votes = [v.voted_for.character.name for v in votes if v.voted_for != v.voter]
-        char_vote_counts = Counter(eligible_votes)
+        eligible_votes = [v.voted_for for v in votes if v.voted_for != v.voter]
+        char_votes = [m.character.name for m in eligible_votes]
+        user_votes = [m.user.username for m in eligible_votes]
+        char_vote_counts = Counter(char_votes)
+        user_vote_counts = Counter(user_votes)
 
         max_vote_count = char_vote_counts.most_common(1)[0][1]
         most_voted = [c for c in char_vote_counts if char_vote_counts[c] == max_vote_count]
@@ -200,9 +203,9 @@ class Game(models.Model):
         else:
             winners.append('werewolf')
 
-        print most_voted
+        print user_vote_counts
         print winners
-        return char_vote_counts, winners
+        return user_vote_counts, winners
 
     def __unicode__(self):
         return self.name

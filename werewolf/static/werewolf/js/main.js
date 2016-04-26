@@ -26,7 +26,7 @@ $(document).ready(function(){
   chatsock.onmessage = function(message) {
       var data = JSON.parse(message.data);
       if (data.starting || data.advancing) {
-
+          // Midgame message logic
           console.log(data);
           if (data.starting) {
             stageInfo = data.stage_info;
@@ -59,7 +59,25 @@ $(document).ready(function(){
                 }, moveTime
             );
           }
+      } else if (data.finished) {
+        // End game logic
+        var winners = data.winners;
+        console.log(winners);
+        var votes = data.votes;
+        console.log(votes);
+        $('body').empty();
+        $('body').append(
+            '<div id="finished"> ' +
+            'Winning Teams:<ul id="winners"></ul>' +
+            'Votes (excluding self-votes): <ul id="votes"></ul></div>');
+        for (var i=0; i < winners.length; i++) {
+          $('#winners').append('<li>' + winners[i] + '</li>')
+        }
+        for (user in votes) {
+          $('#votes').append('<li>' + user + ': ' + votes[user] + '</li>')
+        }
       } else {
+        // Pregame ready signals
         console.log(readyUsers);
         if (! _.includes(readyUsers, data.user)) {
           $('#ready-user-list').append(
