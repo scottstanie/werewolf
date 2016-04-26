@@ -11,7 +11,9 @@ def end_game(sender, **kwargs):
     game = kwargs['instance'].game
     if game.is_finished_voting():
         game.finished = True
-        game.tally_votes()
+
+        winners = game.tally_votes()
+        game.winning_team.extend(winners)
         game.save()
         Group(game.form_groupname()).send({
             'text': json.dumps({

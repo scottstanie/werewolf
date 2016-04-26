@@ -1,11 +1,18 @@
 import random
 from itertools import izip_longest, chain
+from collections import Counter
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.template.loader import render_to_string
 import haikunator
 from os.path import join
+
+TEAM_CHOICES = (
+        ('villager', 'Villager Team'),
+        ('werewolf', 'Werewolf Team'),
+        ('tanner', 'Tanner Team')
+)
 
 
 def _new_haiku():
@@ -34,6 +41,7 @@ class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     created_date = models.DateTimeField('date created', auto_now_add=True)
     finished = models.BooleanField(default=False)
+    winning_teams = ArrayField(models.CharField(max_length=30, choices=TEAM_CHOICES), default=[])
     users = models.ManyToManyField(User)
     present = ArrayField(models.CharField(max_length=30), null=True, default=[])
     current_stage = models.IntegerField(default=0)
@@ -176,6 +184,26 @@ class Game(models.Model):
     def is_finished_voting(self):
         return self.vote_set.count() >= self.num_users()
 
+    def tally_votes(self):
+        votes = self.vote_set.all()
+        eligible_votes = [v.voted_for.character.name for v in votes if v.voted_for != v.voter]
+        char_vote_counts = Counter(eligible_votes)
+
+        max_vote_count = char_vote_counts.most_common(1)[0][1]
+        most_voted = [c for c in char_vote_counts if char_vote_counts[c] == max_vote_count]
+        winners = []
+        if 'Tanner' in most_voted:
+            winners.append('tanner')
+
+        if 'Werewolf' in most_voted or 'Mystic Wolf' in most_voted:
+            winners.append('villager')
+        else:
+            winners.append('werewolf')
+
+        print most_voted
+        print winners
+        return winners
+
     def __unicode__(self):
         return self.name
 
@@ -186,6 +214,7 @@ class Character(models.Model):
                                  recursive=True, blank=True, null=True)
     users = models.ManyToManyField(User, through='Matchup')
     stage = models.IntegerField(default=0)
+    team = models.CharField(max_length=30, choices=TEAM_CHOICES)
 
     def __unicode__(self):
         return self.name
