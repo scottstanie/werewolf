@@ -202,7 +202,7 @@ class Game(models.Model):
 
         print most_voted
         print winners
-        return winners
+        return char_vote_counts, winners
 
     def __unicode__(self):
         return self.name

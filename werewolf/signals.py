@@ -8,16 +8,19 @@ from .models import Vote
 
 @receiver(post_save, sender=Vote)
 def end_game(sender, **kwargs):
+    print 'End Game'
     game = kwargs['instance'].game
     if game.is_finished_voting():
         game.finished = True
 
-        winners = game.tally_votes()
-        game.winning_team.extend(winners)
+        vote_counts, winners = game.tally_votes()
+        game.winning_teams.extend(winners)
         game.save()
         Group(game.form_groupname()).send({
             'text': json.dumps({
-                'finished': True
+                'finished': True,
+                'votes': vote_counts,
+                'winners': winners
             })
         })
         print 'all voted'
