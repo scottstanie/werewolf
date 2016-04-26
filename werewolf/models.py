@@ -33,7 +33,7 @@ def find_player_cards(matchups):
 class Game(models.Model):
     name = models.CharField(max_length=30, default=_new_haiku, unique=True)
     created_date = models.DateTimeField('date created', auto_now_add=True)
-    started = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
     users = models.ManyToManyField(User)
     present = ArrayField(models.CharField(max_length=30), null=True, default=[])
     current_stage = models.IntegerField(default=0)
@@ -173,6 +173,9 @@ class Game(models.Model):
 
         return context
 
+    def is_finished_voting(self):
+        return self.vote_set.count() >= self.num_users()
+
     def __unicode__(self):
         return self.name
 
@@ -215,4 +218,4 @@ class Vote(models.Model):
     game = models.ForeignKey(Game)
 
     def __unicode__(self):
-        return '%s voted for %s in %s' % (self.voter, self.voted_for, self.after)
+        return '%s voted for %s in %s' % (self.voter, self.voted_for, self.game)

@@ -6,7 +6,7 @@
 <h4>Your games:</h4>
 
   <h4 class="game-title">Active Games:</h4>
-  {% for game in unstarted_games %}
+  {% for game in unfinished_games %}
   <div class="row game-box">
     <a href="{% url 'game' name=game.name %}">{{ game }}</a>: Created {{ game.created_date }} <br />
     Players: {{ game.users.all }}
@@ -14,7 +14,7 @@
   {% endfor %}
 
   <h4 class="game-title">Completed games:</h4>
-  {% for game in started_games %}
+  {% for game in finished_games %}
   <div class="row game-box">
     <a href="{% url 'game' name=game.name %}">{{ game }}</a>: Created {{ game.created_date }} <br />
     Players: {{ game.users.all }}

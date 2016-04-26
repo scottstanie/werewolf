@@ -5,7 +5,7 @@
   <h4>Middle Cards</h4>
   {%  for matchup in middle_cards %}
   <h4 class="drunk pick-one" data-before-id="{{before_matchup.id}}" data-after-id="{{matchup.id}}">This card</h4>
-  <div class="disabled text-center">
+  <div class="game-box disabled text-center">
     {{ matchup.character.name }}
     <img class="character-image" src="{{matchup.character.image}}" alt="{{matchup.character}}" >
   </div>

@@ -92,7 +92,7 @@ $(document).ready(function(){
   });
 
   $('body').on('click', '#start', function() {
-    countdownTime = 60 * parseInt($('#countdown-time').val());
+    countdownTime =  parseInt($('#countdown-time').val());
     var startUrl = '/start/' + gameName;
     var chosenCharacters = getChosenCharacters();
     $.ajax({
@@ -158,6 +158,12 @@ $(document).ready(function(){
         console.log(result);
       }
     });
+  });
+
+  // Insomniac view logic
+  $('body').on('click', '.insomniac.pick-one', function() {
+    $(this).next().removeClass('disabled');
+    $('.pick-one').removeClass('pick-one');
   });
 
   // Voting view logic

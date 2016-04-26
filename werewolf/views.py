@@ -54,8 +54,8 @@ def profile(request):
     u = request.user
 
     context = {
-        'started_games': u.game_set.filter(started=True),
-        'unstarted_games': u.game_set.filter(started=False)
+        'finished_games': u.game_set.filter(finished=True),
+        'unfinished_games': u.game_set.filter(finished=False)
     }
     return render(request, 'werewolf/profile.html', context)
 
@@ -110,10 +110,9 @@ def start(request, game_name):
     matchups = game.generate_matchups(characters)
     character_info = game.get_character_info(matchups)
     print character_info
-    game.started = True
     game.current_stage = 1
 
-    # game.save(update_fields=['started'])
+    # game.save(update_fields=['finished'])
     game.save()
 
     countdown_time = json.loads(request.POST['countdownTime'])
@@ -173,6 +172,10 @@ def vote(request, game_name):
         return JsonResponse({'template': template_string})
     elif request.method == 'POST':
         player_id = request.POST['playerId']
+        # Check if this player somehow already voted
+        if game.vote_set.filter(voter__user__id=request.user.id).count() > 0:
+            return JsonResponse({'allowed': False})
+
         voted_for = Matchup.objects.filter(game=game, user_id=player_id).order_by('-id').first()
         voter = Matchup.objects.filter(game=game, user_id=request.user.id).order_by('-id').first()
         v = Vote(voted_for=voted_for, voter=voter, game=game)
