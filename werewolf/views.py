@@ -17,10 +17,6 @@ def index(request):
     return render(request, 'werewolf/index.html')
 
 
-def about(request):
-    return render(request, 'werewolf/about.html')
-
-
 def game(request, name=None):
     try:
         g = Game.objects.get(name=name)
