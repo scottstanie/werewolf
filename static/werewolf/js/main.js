@@ -110,7 +110,7 @@ $(document).ready(function(){
   });
 
   $('body').on('click', '#start', function() {
-    countdownTime =  parseInt($('#countdown-time').val());
+    countdownTime =  60 * parseInt($('#countdown-time').val());
     var startUrl = '/start/' + gameName;
     var chosenCharacters = getChosenCharacters();
     $.ajax({

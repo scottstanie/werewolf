@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import random
+import string
+import dj_database_url
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,10 +24,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'grxy-gatxa(6*vsgaewq!$w2wr1a0qdrb2ax#ia&irjsfa*h+x'
+SECRET_KEY = os.environ.get("SECRET_KEY", "".join(random.choice(string.printable) for i in range(40)))
+DEBUG = os.environ.get("DEBUG", False)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -87,12 +92,13 @@ WSGI_APPLICATION = 'werewolf.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': 'werewolf',
-         'HOST': 'localhost',
-         'PORT': '5432',
-     },
+    'default': dj_database_url.config(),
+    'local': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'werewolf',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
 
 
@@ -138,8 +144,7 @@ if DEBUG is False:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 else:
     STATICFILES_DIRS = (
-        os.path.join(BASE_DIR, 'werewolf', 'static'),
-        os.path.join(BASE_DIR, 'static')
+        os.path.join(BASE_DIR, 'static'),
     )
 
 LOGIN_REDIRECT_URL = '/'

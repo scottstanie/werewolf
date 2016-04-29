@@ -55,13 +55,13 @@ class Game(models.Model):
         '''This should be 3, but just in case (shrug)'''
         return self.num_cards_selected - self.users.count()
 
-    def _current_middle_cards(self):
+    def current_middle_cards(self):
         '''The most recent matchups for this game
         where user_id is None, meaning middle card'''
         return self.matchup_set.filter(user=None)\
                                .order_by('-id')[:self.num_middle_cards()]
 
-    def _current_player_cards(self):
+    def current_player_cards(self):
         '''The most recent matchup for this game
         for each user in the game'''
         return Matchup.objects.filter(game_id=self.id)\
@@ -73,7 +73,7 @@ class Game(models.Model):
         '''The whole set of current matchups
         Must look for null user_id matchups separately,
             in case Switches have pushed these down in time'''
-        return list(chain(self._current_player_cards(), self._current_middle_cards()))
+        return list(chain(self.current_player_cards(), self.current_middle_cards()))
 
     def original_matchup(self, user_id):
         '''The original matchup for this game for this user'''
@@ -192,7 +192,19 @@ class Game(models.Model):
 
     def tally_votes(self):
         votes = self.vote_set.all()
-        eligible_votes = [v.voted_for for v in votes if v.voted_for != v.voter]
+        # Ignore votes for nobody and self-votes
+        eligible_votes = [v.voted_for for v in votes if v.voted_for and v.voted_for != v.voter]
+
+        if eligible_votes == []:
+            # A vote for the table!
+            # Check if there are any werewolves- if not, win!
+            matchups = self.current_player_cards()
+            if all((m.character.team != 'werewolf' for m in matchups)):
+                winners = ['villager']
+            else:
+                winners = ['werewolf']
+            return {}, winners
+
         char_votes = [m.character.name for m in eligible_votes]
         user_votes = [m.user.username for m in eligible_votes]
         char_vote_counts = Counter(char_votes)
@@ -251,7 +263,7 @@ class Switch(models.Model):
 
 class Vote(models.Model):
     '''An endgame vote'''
-    voted_for = models.ForeignKey(Matchup, related_name='voted_for', default=1)
+    voted_for = models.ForeignKey(Matchup, related_name='voted_for', default=1, null=True)
     voter = models.ForeignKey(Matchup, related_name='voter', default=1)
     game = models.ForeignKey(Game)
 

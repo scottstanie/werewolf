@@ -110,8 +110,9 @@ def start(request, game_name):
     '''User has signalled to start the game'''
     characters_chosen = json.loads(request.POST['chars'])
     characters = list(Character.objects.filter(id__in=characters_chosen))
-    # random.shuffle(characters)
-    characters.sort(key=lambda c: c.id, reverse=True)
+    random.shuffle(characters)
+    # For testing: order by character id desc
+    # characters.sort(key=lambda c: c.id, reverse=True)
 
     game = get_object_or_404(Game, name=game_name)
     game.num_cards_selected = len(characters_chosen)
@@ -122,7 +123,6 @@ def start(request, game_name):
     print character_info
     game.current_stage = 1
 
-    # game.save(update_fields=['finished'])
     game.save()
 
     countdown_time = json.loads(request.POST['countdownTime'])
@@ -186,6 +186,7 @@ def vote(request, game_name):
         if game.vote_set.filter(voter__user__id=request.user.id).count() > 0:
             return JsonResponse({'allowed': False})
 
+        # Note: this could be None if clicked "vote for nobody"
         voted_for = Matchup.objects.filter(game=game, user_id=player_id).order_by('-id').first()
         voter = Matchup.objects.filter(game=game, user_id=request.user.id).order_by('-id').first()
         v = Vote(voted_for=voted_for, voter=voter, game=game)
