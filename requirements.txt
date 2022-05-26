@@ -16,6 +16,6 @@ raven==5.12.0
 redis==2.10.5
 six==1.10.0
 static3==0.6.1
-Twisted==22.1.0
+Twisted==22.4.0
 txaio==2.3.1
 zope.interface==4.1.3
